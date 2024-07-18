@@ -11,8 +11,6 @@ require("dotenv").config();
 
 app.use(cors());
 
-
-
 const conditionalMiddleware = (req, res, next) => {
   if (req.originalUrl === "/api/webhook") {
     next();
@@ -25,13 +23,17 @@ const conditionalMiddleware = (req, res, next) => {
 
 app.use(conditionalMiddleware);
 
-
 // app.use('/public', staticFileMiddleware);
 app.use("/public", express.static(path.join(__dirname, "./public")));
 
-
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
+});
+
+// New /test route
+app.get("/test", (req, res) => {
+  console.log("Test route accessed");
+  res.send("Test route response");
 });
 
 const promiseServer = async (app) => {
@@ -40,6 +42,7 @@ const promiseServer = async (app) => {
     resolve(server);
   });
 };
+
 const promiseRun = (server) => {
   return new Promise((resolve, reject) => {
     server.listen(config.port, () => {
@@ -48,6 +51,7 @@ const promiseRun = (server) => {
     });
   });
 };
+
 async function initialize() {
   await db.initialize();
 
