@@ -26,6 +26,8 @@ exports.checkAuthMiddleware = async (req, res, next) => {
     if (!user) {
       return res.status(401).json({ success: false, message: "Invalid Token" });
     }
+
+    req.user = user;
     req.userId = decoded.userId;
     next();
   } catch (error) {

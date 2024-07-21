@@ -5,32 +5,24 @@ const cors = require("cors");
 const config = require("./server/configs/index.js");
 const path = require("path");
 const db = require("./server/db.js");
+const userRouter = require("./server/routes/user-router.js");
 const { staticFileMiddleware } = require("./server/middlewares.js");
 const app = express();
 require("dotenv").config();
 
 app.use(cors());
 
-const conditionalMiddleware = (req, res, next) => {
-  if (req.originalUrl === "/api/webhook") {
-    next();
-  } else {
-    express.json()(req, res, () => {
-      express.urlencoded({ extended: true })(req, res, next);
-    });
-  }
-};
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-app.use(conditionalMiddleware);
+app.use("/api/v1", userRouter);
 
-// app.use('/public', staticFileMiddleware);
 app.use("/public", express.static(path.join(__dirname, "./public")));
 
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
 });
 
-// New /test route
 app.get("/test", (req, res) => {
   console.log("Test route accessed");
   res.send("Test route response");

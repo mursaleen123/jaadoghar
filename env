@@ -1,0 +1,10 @@
+DATABASE_URL = 'mongodb+srv://mursaleenumarpro:Mursaleen123@jaadoghar.aarct6f.mongodb.net/?retryWrites=true&w=majority&appName=jaadoghar'
+MY_SECRET_KEY = '#j1K!9la$qL2Pz#0'
+SERVER_URL = "http://localhost:8000"
+
+USER_EMAIL="bthunder418@gmail.com"
+EMAIL_PASSWORD="voia xbku zdup rseh"
+SMTP_HOST="smtp.gmail.com"
+SMTP_PORT=587
+
+SUPPORT_EMAIL="bthunder418@gmail.com"
