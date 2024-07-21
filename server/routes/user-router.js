@@ -16,15 +16,24 @@ const {
   checkAuthMiddleware,
   checkAdminAuthMiddleware,
 } = require("../middlewares");
+const {
+  validateRegister,
+  validateLogin,
+  validateOtp,
+  resendOtp,
+  forgetpassword,
+  passwordchange,
+} = require("../validators/authValidator");
+const validateMiddleware = require("../middlewares/validationMiddleware");
 
 const app = express();
 
-app.post("/register", userRegister);
-app.post("/verify-otp", otpVerify);
-app.post("/resend-otp", otpResend);
-app.post("/login", userLogin);
-app.post("/forget", forgetPassword);
-app.post("/password-change", passwordChange);
+app.post("/register", validateRegister, validateMiddleware, userRegister);
+app.post("/verify-otp", validateOtp, validateMiddleware, otpVerify);
+app.post("/resend-otp", resendOtp, validateMiddleware, otpResend);
+app.post("/login", validateLogin, validateMiddleware, userLogin);
+app.post("/forget", forgetpassword, validateMiddleware, forgetPassword);
+app.post("/password-change", passwordchange, validateMiddleware,  passwordChange);
 app.get("/getUser", checkAuthMiddleware, getUser);
 // app.get("/getUserListing", checkAdminAuthMiddleware, getUserListing);
 app.get("/getUserListing", getUserListing);
