@@ -1,21 +1,25 @@
-const express = require("express");
-const bodyParser = require("body-parser");
-const http = require("http");
-const cors = require("cors");
-const config = require("./server/configs/index.js");
-const path = require("path");
-const db = require("./server/db.js");
-const userRouter = require("./server/routes/user-router.js");
-const { staticFileMiddleware } = require("./server/middlewares.js");
+import express from "express";
+import http from "http";
+import cors from "cors";
+import config from "./server/configs/index.js";
+import path from "path";
+import { fileURLToPath } from "url";
+import { initialize as dbInitialize, shutdown as dbShutdown } from "./server/db.js"; // Import named exports
+import userRouter from "./server/routes/user-router.js";
+import dotenv from "dotenv";
+
+dotenv.config();
+
 const app = express();
-require("dotenv").config();
 
 app.use(cors());
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/api/v1", userRouter);
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 app.use("/public", express.static(path.join(__dirname, "./public")));
 
@@ -45,11 +49,30 @@ const promiseRun = (server) => {
 };
 
 async function initialize() {
-  await db.initialize();
+  try {
+    console.log("Initializing database...");
+    await dbInitialize(); // Initialize the database
+    console.log("Database initialized.");
 
-  const server = await promiseServer(app);
-  console.log("Server initialized.");
-  await promiseRun(server);
+    const server = await promiseServer(app);
+    console.log("Server initialized.");
+    await promiseRun(server);
+  } catch (error) {
+    console.error("Error initializing server:", error);
+  }
 }
 
 initialize();
+
+// Ensure to handle graceful shutdown
+process.on('SIGTERM', async () => {
+  console.log('SIGTERM signal received: closing HTTP server and shutting down database...');
+  await dbShutdown(); // Close the database connection
+  process.exit(0);
+});
+
+process.on('SIGINT', async () => {
+  console.log('SIGINT signal received: closing HTTP server and shutting down database...');
+  await dbShutdown(); // Close the database connection
+  process.exit(0);
+});

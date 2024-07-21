@@ -1,16 +1,16 @@
-const nodemailer = require("nodemailer");
-const config = require("./configs");
+import nodemailer from 'nodemailer';
+import config from './configs/index.js';
 
 const transporter = nodemailer.createTransport({
   host: config.host,
-  port: parseInt(config.smtp_port),
+  port: parseInt(config.smtp_port, 10),
   auth: {
     user: config.email,
     pass: config.password,
   },
 });
 
-const sendEmail = async (mailOptions) => {
+export const sendEmail = async (mailOptions) => {
   try {
     const info = await transporter.sendMail(mailOptions);
     console.log("Email sent:", info.response);
@@ -20,5 +20,3 @@ const sendEmail = async (mailOptions) => {
     throw error;
   }
 };
-
-module.exports = sendEmail;

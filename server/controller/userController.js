@@ -1,23 +1,27 @@
-const config = require("../configs");
-const { isEmailValid } = require("../helpers/validEmail");
-const Users = require("../models/users");
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-const otpGenerator = require("otp-generator");
-const mongoose = require("mongoose");
-const sendEmail = require("../nodemailer");
-const { generateHashedOTP } = require("../helpers/hashedOtp");
-const fs = require("fs");
-const path = require("path");
-const handlebars = require("handlebars");
-const axios = require("axios");
+import config from "../configs/index.js"; // Ensure the correct path and file extension
+import { isEmailValid } from "../helpers/validEmail.js"; // Ensure the correct path and file extension
+import Users from "../models/users.js"; // Ensure the correct path and file extension
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import otpGenerator from "otp-generator";
+import mongoose from "mongoose";
+import {sendEmail} from "../nodemailer.js"; // Ensure the correct path and file extension
+import { generateHashedOTP } from "../helpers/hashedOtp.js"; // Ensure the correct path and file extension
+import fs from "fs";
+import path from "path";
+import handlebars from "handlebars";
+import axios from "axios";
+import {fileURLToPath} from "url";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const emailTemplateSource = fs.readFileSync(
-  path.join(__dirname, "../templates/email.handlebars"),
-  "utf8"
+    path.join(__dirname, "../templates/email.handlebars"),
+    "utf8"
 );
 const PasswordChangeEmail = handlebars.compile(emailTemplateSource);
 
-const userRegister = async (req, res) => {
+export const userRegister = async (req, res) => {
   try {
     const { name, phone_no, email, password, role } = req.body;
 
@@ -70,11 +74,11 @@ const userRegister = async (req, res) => {
     if (user) {
       await Users.findOneAndUpdate({ email }, { otp }, { upsert: true });
       const otpVerificationTemplateSource = fs.readFileSync(
-        path.join(__dirname, `../templates/otpVerification.handlebars`),
-        "utf8"
+          path.join(__dirname, `../templates/otpVerification.handlebars`),
+          "utf8"
       );
       const otpVerificationEMail = handlebars.compile(
-        otpVerificationTemplateSource
+          otpVerificationTemplateSource
       );
 
       const mailOptions = {
@@ -123,7 +127,7 @@ const userRegister = async (req, res) => {
   }
 };
 
-const userLogin = async (req, res) => {
+export const userLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -163,7 +167,6 @@ const userLogin = async (req, res) => {
         email: user.email,
         otpVerified: user.otpVerified,
         countries: user.countries,
-        token: user.token,
         role: user.role,
         token: token,
       },
@@ -176,7 +179,7 @@ const userLogin = async (req, res) => {
   }
 };
 
-const otpVerify = async (req, res) => {
+export const otpVerify = async (req, res) => {
   try {
     const { email, otp } = req.body;
 
@@ -220,7 +223,7 @@ const otpVerify = async (req, res) => {
   }
 };
 
-const otpResend = async (req, res) => {
+export const otpResend = async (req, res) => {
   try {
     const { email } = req.body;
 
@@ -250,11 +253,11 @@ const otpResend = async (req, res) => {
     await user.save();
 
     const otpVerificationTemplateSource = fs.readFileSync(
-      path.join(__dirname, `../templates/otpVerification.handlebars`),
-      "utf8"
+        path.join(__dirname, `../templates/otpVerification.handlebars`),
+        "utf8"
     );
     const otpVerificationEMail = handlebars.compile(
-      otpVerificationTemplateSource
+        otpVerificationTemplateSource
     );
 
     const mailOptions = {
@@ -277,7 +280,7 @@ const otpResend = async (req, res) => {
   }
 };
 
-const forgetPassword = async (req, res) => {
+export const forgetPassword = async (req, res) => {
   try {
     const { email } = req.body;
 
@@ -286,15 +289,15 @@ const forgetPassword = async (req, res) => {
       return res.status(404).json({
         success: false,
         message:
-          "That address is either invalid, not a verified primary email or is not associated with a user account.",
+            "That address is either invalid, not a verified primary email or is not associated with a user account.",
       });
     const token = jwt.sign({ userId: user._id.toString() }, config.jwtSecret, {
       expiresIn: "1h",
     });
 
     const emailTemplateSource = fs.readFileSync(
-      path.join(__dirname, `../templates/email.handlebars`),
-      "utf8"
+        path.join(__dirname, `../templates/email.handlebars`),
+        "utf8"
     );
     const PasswordChangeEmail = handlebars.compile(emailTemplateSource);
 
@@ -324,14 +327,14 @@ const forgetPassword = async (req, res) => {
         role: user.role,
       },
       message:
-        "Password reset instructions have been sent to your email. Please check your inbox.",
+          "Password reset instructions have been sent to your email. Please check your inbox.",
     });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
 };
 
-const passwordChange = async (req, res) => {
+export const passwordChange = async (req, res) => {
   try {
     const { id, newPassword } = req.body;
 
@@ -372,7 +375,7 @@ const passwordChange = async (req, res) => {
   }
 };
 
-const getUser = async (req, res) => {
+export const getUser = async (req, res) => {
   try {
     if (!req.user) {
       return res.status(400).json({
@@ -391,7 +394,7 @@ const getUser = async (req, res) => {
   }
 };
 
-const updateUser = async (req, res) => {
+export const updateUser = async (req, res) => {
   try {
     const { id, name, phone_no, email, role } = req.body;
 
@@ -438,11 +441,12 @@ const updateUser = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
-const getUserListing = async (req, res) => {
+
+export const getUserListing = async (req, res) => {
   try {
     const user = await Users.find({ role: "user", otpVerified: true })
-      .select("_id name phone_no email otpVerified role createdAt")
-      .sort({ createdAt: -1 });
+        .select("_id name phone_no email otpVerified role createdAt")
+        .sort({ createdAt: -1 });
 
     return res.status(200).json({
       success: true,
@@ -453,11 +457,12 @@ const getUserListing = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
-const getVendorListing = async (req, res) => {
+
+export const getVendorListing = async (req, res) => {
   try {
     const user = await Users.find({ role: "vendor", otpVerified: true })
-      .select("_id name phone_no email otpVerified role createdAt")
-      .sort({ createdAt: -1 });
+        .select("_id name phone_no email otpVerified role createdAt")
+        .sort({ createdAt: -1 });
 
     return res.status(200).json({
       success: true,
@@ -467,17 +472,4 @@ const getVendorListing = async (req, res) => {
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
-};
-
-module.exports = {
-  userRegister,
-  otpVerify,
-  userLogin,
-  forgetPassword,
-  passwordChange,
-  otpResend,
-  getUser,
-  getUserListing,
-  getVendorListing,
-  updateUser,
 };
