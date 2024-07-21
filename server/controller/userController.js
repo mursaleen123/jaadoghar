@@ -4,13 +4,11 @@ import Users from "../models/users.js"; // Ensure the correct path and file exte
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import otpGenerator from "otp-generator";
-import mongoose from "mongoose";
 import {sendEmail} from "../nodemailer.js"; // Ensure the correct path and file extension
 import { generateHashedOTP } from "../helpers/hashedOtp.js"; // Ensure the correct path and file extension
 import fs from "fs";
 import path from "path";
 import handlebars from "handlebars";
-import axios from "axios";
 import {fileURLToPath} from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -38,11 +36,15 @@ export const userRegister = async (req, res) => {
       });
     }
 
-    const prevRes = await Users.findOne({ email });
-    if (prevRes) {
+    const prevUser = await Users.findOne({
+      $or: [{ email }, { phone_no }]
+    });
+
+    if (prevUser) {
+      const message = prevUser.email === email ? "Email Already Exists" : "Phone Already Exists";
       return res.status(409).json({
         success: false,
-        message: "User Already Exists",
+        message: message,
       });
     }
 
@@ -82,7 +84,7 @@ export const userRegister = async (req, res) => {
       );
 
       const mailOptions = {
-        from: config.support_email,
+        from: config.email,
         to: [user.email],
         subject: "Account Registration OTP",
         html: otpVerificationEMail({
@@ -90,7 +92,6 @@ export const userRegister = async (req, res) => {
           name: user?.name,
         }),
       };
-
       await sendEmail(mailOptions, function (error, info) {
         if (error) {
           return res.status(400).json({
