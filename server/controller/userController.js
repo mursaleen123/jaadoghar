@@ -4,24 +4,49 @@ import Users from "../models/users.js"; // Ensure the correct path and file exte
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import otpGenerator from "otp-generator";
-import {sendEmail} from "../nodemailer.js"; // Ensure the correct path and file extension
+import { sendEmail } from "../nodemailer.js"; // Ensure the correct path and file extension
 import { generateHashedOTP } from "../helpers/hashedOtp.js"; // Ensure the correct path and file extension
 import fs from "fs";
 import path from "path";
 import handlebars from "handlebars";
-import {fileURLToPath} from "url";
+import { fileURLToPath } from "url";
+import VendorDetails from "../models/vendorDetails.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const emailTemplateSource = fs.readFileSync(
-    path.join(__dirname, "../templates/email.handlebars"),
-    "utf8"
+  path.join(__dirname, "../templates/email.handlebars"),
+  "utf8"
 );
 const PasswordChangeEmail = handlebars.compile(emailTemplateSource);
 
+const handleVendorRegistration = async (userId, vendor_details) => {
+  const newVendorDetails = new VendorDetails({
+    userId,
+    ...vendor_details,
+  });
+  await newVendorDetails.save();
+  return newVendorDetails._id;
+};
+const handleVendoBankDetails = async (userId, bank_details) => {
+  const newVendorDetails = new bank_details({
+    userId,
+    ...bank_details,
+  });
+  await newVendorDetails.save();
+  return newVendorDetails._id;
+};
 export const userRegister = async (req, res) => {
   try {
-    const { name, phone_no, email, password, role } = req.body;
+    const {
+      name,
+      phone_no,
+      email,
+      password,
+      role,
+      vendor_details,
+      bank_details,
+    } = req.body;
 
     if (!(name && phone_no && email && password)) {
       return res.status(400).json({
@@ -37,11 +62,14 @@ export const userRegister = async (req, res) => {
     }
 
     const prevUser = await Users.findOne({
-      $or: [{ email }, { phone_no }]
+      $or: [{ email }],
     });
 
     if (prevUser) {
-      const message = prevUser.email === email ? "Email Already Exists" : "Phone Already Exists";
+      const message =
+        prevUser.email === email
+          ? "Email Already Exists"
+          : "Phone Already Exists";
       return res.status(409).json({
         success: false,
         message: message,
@@ -65,6 +93,19 @@ export const userRegister = async (req, res) => {
     user.role = role.toLowerCase() === "vendor" ? "vendor" : "user";
     await user.save();
 
+    if (role.toLowerCase() === "vendor") {
+      const vendorDetailsId = await handleVendorRegistration(
+        user._id,
+        vendor_details
+      );
+      const vendorBankDetailsId = await handleVendoBankDetails(
+        user._id,
+        bank_details
+      );
+      user.vendor_details_id = vendorDetailsId;
+      user.bank_details_id = vendorBankDetailsId;
+    }
+
     const otp = otpGenerator.generate(6, {
       digits: true,
       alphabets: false,
@@ -76,11 +117,11 @@ export const userRegister = async (req, res) => {
     if (user) {
       await Users.findOneAndUpdate({ email }, { otp }, { upsert: true });
       const otpVerificationTemplateSource = fs.readFileSync(
-          path.join(__dirname, `../templates/otpVerification.handlebars`),
-          "utf8"
+        path.join(__dirname, `../templates/otpVerification.handlebars`),
+        "utf8"
       );
       const otpVerificationEMail = handlebars.compile(
-          otpVerificationTemplateSource
+        otpVerificationTemplateSource
       );
 
       const mailOptions = {
@@ -254,11 +295,11 @@ export const otpResend = async (req, res) => {
     await user.save();
 
     const otpVerificationTemplateSource = fs.readFileSync(
-        path.join(__dirname, `../templates/otpVerification.handlebars`),
-        "utf8"
+      path.join(__dirname, `../templates/otpVerification.handlebars`),
+      "utf8"
     );
     const otpVerificationEMail = handlebars.compile(
-        otpVerificationTemplateSource
+      otpVerificationTemplateSource
     );
 
     const mailOptions = {
@@ -290,15 +331,15 @@ export const forgetPassword = async (req, res) => {
       return res.status(404).json({
         success: false,
         message:
-            "That address is either invalid, not a verified primary email or is not associated with a user account.",
+          "That address is either invalid, not a verified primary email or is not associated with a user account.",
       });
     const token = jwt.sign({ userId: user._id.toString() }, config.jwtSecret, {
       expiresIn: "1h",
     });
 
     const emailTemplateSource = fs.readFileSync(
-        path.join(__dirname, `../templates/email.handlebars`),
-        "utf8"
+      path.join(__dirname, `../templates/email.handlebars`),
+      "utf8"
     );
     const PasswordChangeEmail = handlebars.compile(emailTemplateSource);
 
@@ -328,7 +369,7 @@ export const forgetPassword = async (req, res) => {
         role: user.role,
       },
       message:
-          "Password reset instructions have been sent to your email. Please check your inbox.",
+        "Password reset instructions have been sent to your email. Please check your inbox.",
     });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -446,8 +487,8 @@ export const updateUser = async (req, res) => {
 export const getUserListing = async (req, res) => {
   try {
     const user = await Users.find({ role: "user", otpVerified: true })
-        .select("_id name phone_no email otpVerified role createdAt")
-        .sort({ createdAt: -1 });
+      .select("_id name phone_no email otpVerified role createdAt")
+      .sort({ createdAt: -1 });
 
     return res.status(200).json({
       success: true,
@@ -462,8 +503,8 @@ export const getUserListing = async (req, res) => {
 export const getVendorListing = async (req, res) => {
   try {
     const user = await Users.find({ role: "vendor", otpVerified: true })
-        .select("_id name phone_no email otpVerified role createdAt")
-        .sort({ createdAt: -1 });
+      .select("_id name phone_no email otpVerified role createdAt")
+      .sort({ createdAt: -1 });
 
     return res.status(200).json({
       success: true,
