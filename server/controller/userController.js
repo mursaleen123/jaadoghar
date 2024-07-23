@@ -11,6 +11,7 @@ import path from "path";
 import handlebars from "handlebars";
 import { fileURLToPath } from "url";
 import VendorDetails from "../models/vendorDetails.js";
+import BankDetails from "../models/bankDetails.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -29,7 +30,7 @@ const handleVendorRegistration = async (userId, vendor_details) => {
   return newVendorDetails._id;
 };
 const handleVendoBankDetails = async (userId, bank_details) => {
-  const newVendorDetails = new bank_details({
+  const newVendorDetails = new BankDetails({
     userId,
     ...bank_details,
   });
@@ -133,14 +134,14 @@ export const userRegister = async (req, res) => {
           name: user?.name,
         }),
       };
-      await sendEmail(mailOptions, function (error, info) {
-        if (error) {
-          return res.status(400).json({
-            success: false,
-            message: error,
-          });
-        }
-      });
+      // await sendEmail(mailOptions, function (error, info) {
+      //   if (error) {
+      //     return res.status(400).json({
+      //       success: false,
+      //       message: error,
+      //     });
+      //   }
+      // });
     }
     user.otp = generateHashedOTP(otp);
 
@@ -426,9 +427,13 @@ export const getUser = async (req, res) => {
       });
     }
 
+    const user = await Users.findById(req.user._id)
+      .populate("bank_details_id")
+      .populate("vendor_details_id");
+
     return res.status(200).json({
       success: true,
-      data: req.user,
+      data: user,
       message: "User Fetched Successfully",
     });
   } catch (error) {
@@ -504,6 +509,8 @@ export const getVendorListing = async (req, res) => {
   try {
     const user = await Users.find({ role: "vendor", otpVerified: true })
       .select("_id name phone_no email otpVerified role createdAt")
+      .populate("bank_details_id")
+      .populate("vendor_details_id")
       .sort({ createdAt: -1 });
 
     return res.status(200).json({

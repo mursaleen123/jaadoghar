@@ -35,7 +35,7 @@ app.post('/login', validateLogin, validateMiddleware, userLogin);
 app.post('/forget', forgetpassword, validateMiddleware, forgetPassword);
 app.post('/password-change', passwordchange, validateMiddleware, passwordChange);
 app.get('/getUser', checkAuthMiddleware, getUser);
-//app.get('/getUserListing', getUserListing); // Uncomment if needed: checkAdminAuthMiddleware
+app.get('/getUserListing', getUserListing); // Uncomment if needed: checkAdminAuthMiddleware
 app.get('/getVendorListing', getVendorListing);
 app.post('/updateUser', checkAuthMiddleware, updateUser);
 

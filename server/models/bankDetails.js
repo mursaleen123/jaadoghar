@@ -1,3 +1,5 @@
+import mongoose from 'mongoose';
+
 const bankDetailsSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "users" },
   GSTAccountName: { type: String, required: false },
