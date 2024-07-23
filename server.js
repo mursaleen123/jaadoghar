@@ -6,6 +6,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { initialize as dbInitialize, shutdown as dbShutdown } from "./server/db.js"; // Import named exports
 import userRouter from "./server/routes/user-router.js";
+import propertyRouter from "./server/routes/property-router.js";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -17,6 +18,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/api/v1", userRouter);
+app.use("/api/v1", propertyRouter);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
