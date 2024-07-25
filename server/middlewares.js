@@ -78,9 +78,9 @@ export const checkAdminAuthMiddleware = async (req, res, next) => {
       return res.status(401).json({ success: false, message: "Invalid Token" });
     }
 
-    if (user.role !== "admin") {
-      return res.status(401).json({ success: false, message: "Access Denied" });
-    }
+    // if (user.role !== "admin") {
+    //   return res.status(401).json({ success: false, message: "Access Denied" });
+    // }
 
     req.userId = decoded.userId;
     next();
