@@ -65,8 +65,20 @@ const propertySchema = new mongoose.Schema(
     LocationKnowHow: { type: String, required: false },
     price: { type: String, required: false },
     capacity: { type: String, required: false },
-    amenities: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Amenities' }],
-    filters: [{ type: Number, required: false }],
+    amenities: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Amenities",
+        required: false,
+      },
+    ],
+    filters: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Filters",
+        required: false,
+      },
+    ],
     meals: [mealSchema],
     status: { type: String, required: false },
     taxesAndCancellations: {

@@ -8,6 +8,7 @@ import { initialize as dbInitialize, shutdown as dbShutdown } from "./server/db.
 import userRouter from "./server/routes/user-router.js";
 import propertyRouter from "./server/routes/property-router.js";
 import amenityRouter from "./server/routes/amenities-router.js";
+import filterRouter from "./server/routes/filters-router.js";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -18,6 +19,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+app.use("/api/v1", filterRouter);
 app.use("/api/v1", userRouter);
 app.use("/api/v1", propertyRouter);
 app.use("/api/v1", amenityRouter);

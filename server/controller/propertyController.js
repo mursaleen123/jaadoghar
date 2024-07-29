@@ -73,7 +73,7 @@ export const propertyCreate = async (req, res) => {
 
 export const getProperties = async (req, res) => {
   try {
-    const properties = await PropertyDetails.find().populate('amenities');
+    const properties = await PropertyDetails.find().populate('amenities').populate('filters');
     res.status(200).json({
       data: { properties },
       success: true,
@@ -91,7 +91,7 @@ export const getProperties = async (req, res) => {
 export const getPropertyById = async (req, res) => {
   try {
     const { id } = req.params;
-    const property = await PropertyDetails.findById(id).populate('amenities');
+    const property = await PropertyDetails.findById(id).populate('amenities').populate('filters');
 
     if (!property) {
       return res.status(404).json({
