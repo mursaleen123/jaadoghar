@@ -1,4 +1,4 @@
-import path from "path";
+import mongoose from "mongoose";
 import { fileURLToPath } from "url";
 import PropertyDetails from "../models/property.js";
 const __filename = fileURLToPath(import.meta.url);
@@ -28,8 +28,7 @@ export const propertyCreate = async (req, res) => {
       seo,
       additionalHost,
     } = req.body;
-
-    // Create a new PropertyDetails document
+    
     const newProperty = new PropertyDetails({
       dateOfLaunch,
       propertyName,
@@ -55,10 +54,8 @@ export const propertyCreate = async (req, res) => {
       user_id: req.user._id,
     });
 
-    // Save the new property to the database
     const property = await newProperty.save();
 
-    // Respond with success
     res.status(200).json({
       data: { property },
       success: true,
@@ -66,7 +63,102 @@ export const propertyCreate = async (req, res) => {
       code: "propertyCreateAPI",
     });
   } catch (error) {
-    // Handle errors
+    return res.status(500).json({
+      success: false,
+      error: error.message,
+      message: error.message,
+    });
+  }
+};
+
+export const getProperties = async (req, res) => {
+  try {
+    const properties = await PropertyDetails.find().populate('amenities');
+    res.status(200).json({
+      data: { properties },
+      success: true,
+      message: 'Properties Retrieved Successfully',
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: error.message,
+      message: error.message,
+    });
+  }
+};
+
+export const getPropertyById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const property = await PropertyDetails.findById(id).populate('amenities');
+
+    if (!property) {
+      return res.status(404).json({
+        success: false,
+        message: 'Property Not Found',
+      });
+    }
+
+    res.status(200).json({
+      data: { property },
+      success: true,
+      message: 'Property Retrieved Successfully',
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: error.message,
+      message: error.message,
+    });
+  }
+};
+
+export const updateProperty = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updates = req.body;
+
+    const property = await PropertyDetails.findByIdAndUpdate(id, updates, { new: true });
+
+    if (!property) {
+      return res.status(404).json({
+        success: false,
+        message: 'Property Not Found',
+      });
+    }
+
+    res.status(200).json({
+      data: { property },
+      success: true,
+      message: 'Property Updated Successfully',
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: error.message,
+      message: error.message,
+    });
+  }
+};
+
+export const deleteProperty = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const property = await PropertyDetails.findByIdAndDelete(id);
+
+    if (!property) {
+      return res.status(404).json({
+        success: false,
+        message: 'Property Not Found',
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Property Deleted Successfully',
+    });
+  } catch (error) {
     return res.status(500).json({
       success: false,
       error: error.message,

@@ -4,7 +4,7 @@ import { env } from 'node:process';
 dotenv.config();
 
 const config = {
-  port: env.SERVER_PORT??8000,
+  port: env.SERVER_PORT?? 9000,
   expiresIn: env.TOKEN_EXPIRES_IN??"1d",
   jwtSecret: env.MY_SECRET_KEY ?? "#j1K!9la$qL2Pz#0",
 
