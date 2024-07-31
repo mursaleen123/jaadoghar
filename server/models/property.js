@@ -79,6 +79,13 @@ const propertySchema = new mongoose.Schema(
         required: false,
       },
     ],
+    collections: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Collection",
+        required: false,
+      },
+    ],
     meals: [mealSchema],
     status: { type: String, required: false },
     taxesAndCancellations: {
