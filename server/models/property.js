@@ -86,6 +86,13 @@ const propertySchema = new mongoose.Schema(
         required: false,
       },
     ],
+    experiences: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Experiences",
+        required: false,
+      },
+    ],
     meals: [mealSchema],
     status: { type: String, required: false },
     taxesAndCancellations: {

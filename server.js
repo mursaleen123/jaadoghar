@@ -10,6 +10,7 @@ import propertyRouter from "./server/routes/property-router.js";
 import amenityRouter from "./server/routes/amenities-router.js";
 import collectionRouter from "./server/routes/collection-router.js";
 import filterRouter from "./server/routes/filters-router.js";
+import experienceRouter from "./server/routes/experience-router.js";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -25,6 +26,7 @@ app.use("/api/v1", userRouter);
 app.use("/api/v1", propertyRouter);
   app.use("/api/v1", amenityRouter);
   app.use("/api/v1", collectionRouter);
+  app.use("/api/v1", experienceRouter);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

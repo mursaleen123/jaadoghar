@@ -18,6 +18,7 @@ export const propertyCreate = async (req, res) => {
       capacity,
       amenities,
       collections,
+      experiences,
       filters,
       meals,
       status,
@@ -43,6 +44,7 @@ export const propertyCreate = async (req, res) => {
       capacity,
       amenities,
       collections,
+      experiences,
       filters,
       meals,
       status,
@@ -75,7 +77,7 @@ export const propertyCreate = async (req, res) => {
 
 export const getProperties = async (req, res) => {
   try {
-    const properties = await PropertyDetails.find().populate('amenities').populate('filters').populate('collections');
+    const properties = await PropertyDetails.find().populate('amenities').populate('filters').populate('collections').populate('experiences');
     res.status(200).json({
       data: { properties },
       success: true,
@@ -93,7 +95,7 @@ export const getProperties = async (req, res) => {
 export const getPropertyById = async (req, res) => {
   try {
     const { id } = req.params;
-    const property = await PropertyDetails.findById(id).populate('amenities').populate('filters').populate('collections');
+    const property = await PropertyDetails.findById(id).populate('amenities').populate('filters').populate('collections').populate('experiences');
 
     if (!property) {
       return res.status(404).json({
