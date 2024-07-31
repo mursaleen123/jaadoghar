@@ -22,8 +22,8 @@ app.use(express.json());
 // Create a new amenity
 app.post(
   '/addAmenity',
-  checkAdminAuthMiddleware,
-  upload.none('image'),  
+  // checkAdminAuthMiddleware,
+  upload.single('image'),  
   createAmenity 
 );
 
@@ -44,7 +44,8 @@ app.get(
 // Update an amenity by ID
 app.put(
   '/updateAmenity/:id',
-  checkAdminAuthMiddleware, 
+  // checkAdminAuthMiddleware, 
+  upload.single('image'),  
   updateAmenity  
 );
 
