@@ -22,7 +22,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/api/v1", filterRouter);
 app.use("/api/v1", userRouter);
 app.use("/api/v1", propertyRouter);
-app.use("/api/v1", amenityRouter);
+  app.use("/api/v1", amenityRouter);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

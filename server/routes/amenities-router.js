@@ -1,4 +1,5 @@
 import express from 'express';
+
 import {
   createAmenity,
   getAmenities,
@@ -11,22 +12,25 @@ import {
   checkAdminAuthMiddleware,
   checkAuthMiddleware
 } from '../middlewares.js'; // Ensure the correct path and file extension
+import { upload } from '../helpers/uploadFile.js';
 
 const app = express();
 
 app.use(express.json());
 
+
 // Create a new amenity
 app.post(
   '/addAmenity',
-  checkAdminAuthMiddleware, 
+  checkAdminAuthMiddleware,
+  upload.none('image'),  
   createAmenity 
 );
 
 // Get all amenities
 app.get(
   '/getAmenities',
-  checkAuthMiddleware, 
+  // checkAuthMiddleware, 
   getAmenities 
 );
 

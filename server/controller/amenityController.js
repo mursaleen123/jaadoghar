@@ -1,16 +1,29 @@
 import Amenities from "../models/amenity.js";
+import path from 'path';
+import fs from 'fs';
 
 // Create a new amenity
 export const createAmenity = async (req, res) => {
   try {
-    const { name, type, imageUrl, description } = req.body;
-    const newAmenity = new  Amenities({ name, type, imageUrl, description });
+    const { name, type, description , folder} = req.body;
+    const imageUrl = req.file ? `/images/${folder.toLowerCase()}/${req.file.filename}` : null;
+
+    // Ensure the directory exists
+    const uploadPath = path.join('public/images', folder);
+    if (!fs.existsSync(uploadPath)) {
+      fs.mkdirSync(uploadPath, { recursive: true });
+    }
+
+    const newAmenity = new Amenities({ name, type, imageUrl, description });
     await newAmenity.save();
+
     res.status(201).json(newAmenity);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
+
 
 // Get all amenities
 export const getAmenities = async (req, res) => {
