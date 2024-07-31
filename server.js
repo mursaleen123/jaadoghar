@@ -8,6 +8,7 @@ import { initialize as dbInitialize, shutdown as dbShutdown } from "./server/db.
 import userRouter from "./server/routes/user-router.js";
 import propertyRouter from "./server/routes/property-router.js";
 import amenityRouter from "./server/routes/amenities-router.js";
+import collectionRouter from "./server/routes/collection-router.js";
 import filterRouter from "./server/routes/filters-router.js";
 import dotenv from "dotenv";
 
@@ -23,6 +24,7 @@ app.use("/api/v1", filterRouter);
 app.use("/api/v1", userRouter);
 app.use("/api/v1", propertyRouter);
   app.use("/api/v1", amenityRouter);
+  app.use("/api/v1", collectionRouter);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
