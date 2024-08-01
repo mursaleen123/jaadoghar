@@ -9,7 +9,7 @@ import {
 
 import validateMiddleware from "../middlewares/validationMiddleware.js"; // Ensure the correct path and file extension
 import { propertyValidate } from "../validators/propertyValidator.js";
-import { deleteProperty, getProperties, getPropertyById, propertyCreate, updateProperty } from "../controller/propertyController.js";
+import { deleteProperty, getProperties, getPropertyById, propertyCreate, searchProperties, updateProperty } from "../controller/propertyController.js";
 
 const app = express();
 
@@ -29,6 +29,12 @@ app.get(
   getProperties
 );
 
+// Get all properties
+app.get(
+  '/searchProperties',
+  searchProperties
+);
+
 // Get a specific property by ID
 app.get(
   '/getProperty/:id',
@@ -38,7 +44,7 @@ app.get(
 
 // Update a property by ID
 app.put(
-  '/updateProperty/:id',
+  '/updateProperty/:id', 
   checkAdminAuthMiddleware,
   updateProperty
 );

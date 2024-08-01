@@ -30,7 +30,7 @@ export const propertyCreate = async (req, res) => {
       seo,
       additionalHost,
     } = req.body;
-    
+
     const newProperty = new PropertyDetails({
       dateOfLaunch,
       propertyName,
@@ -77,14 +77,82 @@ export const propertyCreate = async (req, res) => {
 
 export const getProperties = async (req, res) => {
   try {
-    const properties = await PropertyDetails.find().populate('amenities').populate('filters').populate('collections').populate('experiences');
+    let query = {};
+
+    if (req.user.role === "vendor") {
+      query = { user_id: req.user._id }; // Only get properties associated with the vendor
+    }
+
+    // Fetch properties based on the query
+    const properties = await PropertyDetails.find(query)
+      .populate("amenities")
+      .populate("filters")
+      .populate("collections")
+      .populate("experiences");
+
     res.status(200).json({
       data: { properties },
       success: true,
-      message: 'Properties Retrieved Successfully',
+      message: "Properties Retrieved Successfully",
     });
   } catch (error) {
-    return res.status(500).json({
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      message: error.message,
+    });
+  }
+};
+
+export const searchProperties = async (req, res) => {
+  try {
+    let properties;
+
+    if (req.body.searchTerm) {
+      const searchTerm = req.body.searchTerm;
+      const regex = new RegExp(searchTerm, "i");
+      properties = await PropertyDetails.aggregate([
+        {
+          $lookup: {
+            from: "experiences",
+            localField: "experiences",
+            foreignField: "_id",
+            as: "experiencesDetails",
+          },
+        },
+        {
+          $unwind: "$experiencesDetails",
+        },
+        {
+          $match: {
+            $or: [
+              { propertyName: regex },
+              { description: regex },
+              { "location.city": regex },
+              { "location.state": regex },
+              { "experiencesDetails.name": regex },
+            ],
+          },
+        },
+        {
+          $group: {
+            _id: "$_id",
+            propertyName: { $first: "$propertyName" },
+            description: { $first: "$description" },
+            location: { $first: "$location" },
+            experiences: { $push: "$experiencesDetails" },
+            // Include other fields you want to return here
+          },
+        },
+      ]);
+    }
+    res.status(200).json({
+      data: { properties },
+      success: true,
+      message: "Searched Property",
+    });
+  } catch (error) {
+    res.status(500).json({
       success: false,
       error: error.message,
       message: error.message,
@@ -95,19 +163,23 @@ export const getProperties = async (req, res) => {
 export const getPropertyById = async (req, res) => {
   try {
     const { id } = req.params;
-    const property = await PropertyDetails.findById(id).populate('amenities').populate('filters').populate('collections').populate('experiences');
+    const property = await PropertyDetails.findById(id)
+      .populate("amenities")
+      .populate("filters")
+      .populate("collections")
+      .populate("experiences");
 
     if (!property) {
       return res.status(404).json({
         success: false,
-        message: 'Property Not Found',
+        message: "Property Not Found",
       });
     }
 
     res.status(200).json({
       data: { property },
       success: true,
-      message: 'Property Retrieved Successfully',
+      message: "Property Retrieved Successfully",
     });
   } catch (error) {
     return res.status(500).json({
@@ -123,19 +195,21 @@ export const updateProperty = async (req, res) => {
     const { id } = req.params;
     const updates = req.body;
 
-    const property = await PropertyDetails.findByIdAndUpdate(id, updates, { new: true });
+    const property = await PropertyDetails.findByIdAndUpdate(id, updates, {
+      new: true,
+    });
 
     if (!property) {
       return res.status(404).json({
         success: false,
-        message: 'Property Not Found',
+        message: "Property Not Found",
       });
     }
 
     res.status(200).json({
       data: { property },
       success: true,
-      message: 'Property Updated Successfully',
+      message: "Property Updated Successfully",
     });
   } catch (error) {
     return res.status(500).json({
@@ -154,13 +228,13 @@ export const deleteProperty = async (req, res) => {
     if (!property) {
       return res.status(404).json({
         success: false,
-        message: 'Property Not Found',
+        message: "Property Not Found",
       });
     }
 
     res.status(200).json({
       success: true,
-      message: 'Property Deleted Successfully',
+      message: "Property Deleted Successfully",
     });
   } catch (error) {
     return res.status(500).json({
