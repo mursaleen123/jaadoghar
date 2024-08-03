@@ -4,13 +4,17 @@ import cors from "cors";
 import config from "./server/configs/index.js";
 import path from "path";
 import { fileURLToPath } from "url";
-import { initialize as dbInitialize, shutdown as dbShutdown } from "./server/db.js"; // Import named exports
+import {
+  initialize as dbInitialize,
+  shutdown as dbShutdown,
+} from "./server/db.js"; // Import named exports
 import userRouter from "./server/routes/user-router.js";
 import propertyRouter from "./server/routes/property-router.js";
 import amenityRouter from "./server/routes/amenities-router.js";
 import collectionRouter from "./server/routes/collection-router.js";
 import filterRouter from "./server/routes/filters-router.js";
 import experienceRouter from "./server/routes/experience-router.js";
+import sectionRouter from "./server/routes/section-router.js";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -24,9 +28,10 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/api/v1", filterRouter);
 app.use("/api/v1", userRouter);
 app.use("/api/v1", propertyRouter);
-  app.use("/api/v1", amenityRouter);
-  app.use("/api/v1", collectionRouter);
-  app.use("/api/v1", experienceRouter);
+app.use("/api/v1", amenityRouter);
+app.use("/api/v1", collectionRouter);
+app.use("/api/v1", experienceRouter);
+app.use("/api/v1", sectionRouter);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -75,14 +80,18 @@ async function initialize() {
 initialize();
 
 // Ensure to handle graceful shutdown
-process.on('SIGTERM', async () => {
-  console.log('SIGTERM signal received: closing HTTP server and shutting down database...');
+process.on("SIGTERM", async () => {
+  console.log(
+    "SIGTERM signal received: closing HTTP server and shutting down database..."
+  );
   await dbShutdown(); // Close the database connection
   process.exit(0);
 });
 
-process.on('SIGINT', async () => {
-  console.log('SIGINT signal received: closing HTTP server and shutting down database...');
+process.on("SIGINT", async () => {
+  console.log(
+    "SIGINT signal received: closing HTTP server and shutting down database..."
+  );
   await dbShutdown(); // Close the database connection
   process.exit(0);
 });
