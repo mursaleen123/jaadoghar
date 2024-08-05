@@ -19,7 +19,7 @@ export const createAmenity = async (req, res) => {
     const newAmenity = new Amenities({ name, type, imageUrl, description });
     await newAmenity.save();
 
-    res.status(201).json(newAmenity);
+    res.status(201).json({data:newAmenity,message:"Successfully created"});
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -29,7 +29,7 @@ export const createAmenity = async (req, res) => {
 export const getAmenities = async (req, res) => {
   try {
     const amenities = await Amenities.find();
-    res.status(200).json(amenities);
+    res.status(200).json({data:amenities,message:"amenities retrieved successfully"});
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -42,7 +42,7 @@ export const getAmenityById = async (req, res) => {
     if (!amenity) {
       return res.status(404).json({ message: "Amenity not found" });
     }
-    res.status(200).json(amenity);
+    res.status(200).json({data:amenity,message:"amenity retrieved successfully"});
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -78,8 +78,7 @@ export const updateAmenity = async (req, res) => {
     if (!updatedAmenity) {
       return res.status(404).json({ message: "Amenity not found" });
     }
-
-    res.status(200).json(updatedAmenity);
+    res.status(200).json({ data:updatedAmenity,message: "Amenity updated successfully" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

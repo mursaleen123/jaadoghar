@@ -19,7 +19,7 @@ export const createCollection = async (req, res) => {
     const newCollection = new Collection({ name, imageUrl, description });
     await newCollection.save();
 
-    res.status(201).json(newCollection);
+    res.status(201).json({data:newCollection,message:"collection successfully created"});
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -29,7 +29,7 @@ export const createCollection = async (req, res) => {
 export const getCollections = async (req, res) => {
   try {
     const collections = await Collection.find();
-    res.status(200).json(collections);
+    res.status(200).json({data:collections,message:"collections successfully retrieved"});
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -42,7 +42,7 @@ export const getCollectionById = async (req, res) => {
     if (!collection) {
       return res.status(404).json({ message: "Collection not found" });
     }
-    res.status(200).json(collection);
+    res.status(200).json({data:collection,message:"collection successfully retrieved"});
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -77,6 +77,7 @@ export const updateCollection = async (req, res) => {
     }
 
     res.status(200).json(updatedCollection);
+    res.status(201).json({data:newCollection,message:"updated collection successfully"});
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
