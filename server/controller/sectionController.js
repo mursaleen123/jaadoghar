@@ -3,7 +3,6 @@ import path from "path";
 import fs from "fs";
 import Sections from "../models/sections.js";
 
-
 //------------------------- ABOUT US ------------------------- //
 
 export const createAboutUs = async (req, res) => {
@@ -87,14 +86,89 @@ export const createAboutUs = async (req, res) => {
 // Get about us page
 export const getAboutUs = async (req, res) => {
   try {
-    const section = await Sections.findOne().sort({ createdAt: 1 }); 
-    if (section) {
-      res.status(200).json(section);
+    const section = await Sections.findOne().sort({ createdAt: 1 });
+    const { aboutUs } = section;
+
+    if (aboutUs) {
+      res.status(200).json(aboutUs);
     } else {
-      res.status(404).json({ message: "No sections found" });
+      res.status(404).json({ message: "No aboutUs found" });
     }
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 //------------------------- ABOUT US ------------------------- //
+
+//------------------------- HOME PAGE ------------------------- //
+
+export const createHomePage = async (req, res) => {
+  try {
+    const { HomePage, folder } = req.body;
+    const imageUrls = {};
+    let section = await Sections.findOne();
+
+    if (req.files) {
+      for (const [fieldname, files] of Object.entries(req.files)) {
+        imageUrls[fieldname] = files.map(
+          (file) => `/images/${folder.toLowerCase()}/${file.filename}`
+        );
+      }
+    }
+
+    if (section.HomePage) {
+      if (imageUrls.HeroSectionImage) {
+        section.HomePage.heroSection = {
+          ...section.HomePage.heroSection,
+          imageUrl: imageUrls.HeroSectionImage[0],
+        };
+      }
+
+      section = Object.assign(section, HomePage);
+
+      if (HomePage.collectionSection) {
+        section.HomePage.collectionSection = HomePage.collectionSection;
+      }
+      if (HomePage.experiencesSection) {
+        section.HomePage.experiencesSection = HomePage.experiencesSection;
+      }
+      await section.save();
+    } else {
+      HomePage.heroSection.imageUrl =
+        imageUrls.HeroSectionImage && imageUrls.HeroSectionImage.length > 0
+          ? imageUrls.HeroSectionImage[0]
+          : {};
+
+      HomePage.collectionSection = HomePage.collectionSection || [];
+      HomePage.experiencesSection = HomePage.experiencesSection || [];
+
+      section.HomePage = HomePage;
+
+      await section.save();
+    }
+
+    res.status(200).json(section);
+  } catch (error) {
+    console.error("Error creating/updating HomePage section:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+// Get home page
+export const getHomePage = async (req, res) => {
+  try {
+    const section = await Sections.findOne()
+      .sort({ createdAt: 1 })
+      .populate("HomePage.collectionSection")
+      .populate("HomePage.experiencesSection");
+    const { HomePage } = section;
+
+    if (HomePage) {
+      res.status(200).json(HomePage);
+    } else {
+      res.status(404).json({ message: "No HomePage found" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+//------------------------- HOME PAGE ------------------------- //

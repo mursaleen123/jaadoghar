@@ -5,7 +5,7 @@ import {
   checkAuthMiddleware,
 } from "../middlewares.js"; // Ensure the correct path and file extension
 import { upload } from "../helpers/uploadFile.js";
-import { createAboutUs, getAboutUs } from "../controller/sectionController.js";
+import { createAboutUs, createHomePage, getAboutUs, getHomePage } from "../controller/sectionController.js";
 import {
   getAmenities,
   updateAmenity,
@@ -17,7 +17,7 @@ app.use(express.json());
 
 //------------------------- ABOUT US ------------------------- //
 // Create a new aboutus
-const uploadImages = upload.fields([
+const uploadAboutUsImages = upload.fields([
   { name: "sectionOneImage", maxCount: 1 },
   { name: "sectionThirdImage", maxCount: 1 },
   { name: "card1Image", maxCount: 1 },
@@ -29,7 +29,7 @@ const uploadImages = upload.fields([
 app.post(
   "/createAboutUs",
   // checkAdminAuthMiddleware,
-  uploadImages,
+  uploadAboutUsImages,
   createAboutUs
 );
 
@@ -39,8 +39,26 @@ app.get(
   // checkAuthMiddleware,
   getAboutUs
 );
-
-
 //------------------------- ABOUT US ------------------------- //
+
+
+//------------------------- HOME PAGE ------------------------- //
+const uploadHomePageImages = upload.fields([
+  { name: "HeroSectionImage", maxCount: 1 }, 
+]);
+app.post(
+  "/createHomePage",
+  // checkAdminAuthMiddleware,
+  uploadHomePageImages,
+  createHomePage
+);
+
+app.get(
+  "/getHomePage",
+  // checkAuthMiddleware,
+  getHomePage
+);
+
+//------------------------- HOME PAGE ------------------------- //
 
 export default app;
