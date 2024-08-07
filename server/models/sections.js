@@ -92,10 +92,28 @@ const homeSchema = new mongoose.Schema({
   },
 });
 
+//Privay Policy page
+const privacyPolicySchema = new mongoose.Schema({
+  title: { type: String, required: false },
+  description: { type: String, required: false },
+});
+//Refund Policy page
+const refundPolicySchema = new mongoose.Schema({
+  title: { type: String, required: false },
+  description: { type: String, required: false },
+});
+//Terms and Conditions Policy page
+const termsPolicySchema = new mongoose.Schema({
+  title: { type: String, required: false },
+  description: { type: String, required: false },
+});
 const sectionsSchema = new mongoose.Schema(
   {
     aboutUs: { type: aboutUsSchema, required: false },
     HomePage: { type: homeSchema, required: false },
+    PrivacyPolicyPage: { type: privacyPolicySchema, required: false },
+    RefundPolicyPage: { type: refundPolicySchema, required: false },
+    TermsPolicyPage: { type: termsPolicySchema, required: false },
   },
   { timestamps: true }
 );

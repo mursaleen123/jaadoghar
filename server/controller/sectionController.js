@@ -172,3 +172,116 @@ export const getHomePage = async (req, res) => {
   }
 };
 //------------------------- HOME PAGE ------------------------- //
+
+//------------------------- Privacy Policy Page ------------------------- //
+
+export const createPrivacyPolicyPage = async (req, res) => {
+  try {
+    const { privacyPolicyPage } = req.body;
+    let section = await Sections.findOne();
+    if (section) {
+      section.PrivacyPolicyPage = privacyPolicyPage;
+      await section.save();
+    } else {
+      section = new Sections(privacyPolicyPage);
+      await section.save();
+    }
+
+    res.status(200).json(section);
+  } catch (error) {
+    console.error("Error creating/updating About Us section:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+// Get about us page
+export const getPrivacyPolicyPage = async (req, res) => {
+  try {
+    const section = await Sections.findOne().sort({ createdAt: 1 });
+    const { PrivacyPolicyPage } = section;
+
+    if (PrivacyPolicyPage) {
+      res.status(200).json(PrivacyPolicyPage);
+    } else {
+      res.status(404).json({ message: "No privacyPolicyPage found" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+//-------------------------  Privacy Policy Page ------------------------- //
+
+//------------------------- Refund Policy Page ------------------------- //
+
+export const createRefundPolicyPage = async (req, res) => {
+  try {
+    const { refundPolicyPage } = req.body;
+    let section = await Sections.findOne();
+    if (section) {
+      section.RefundPolicyPage = refundPolicyPage;
+      await section.save();
+    } else {
+      section = new Sections(refundPolicyPage);
+      await section.save();
+    }
+
+    res.status(200).json(section);
+  } catch (error) {
+    console.error("Error creating/updating About Us section:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+// Get about us page
+export const getRefundPolicyPage = async (req, res) => {
+  try {
+    const section = await Sections.findOne().sort({ createdAt: 1 });
+    const { RefundPolicyPage } = section;
+
+    if (RefundPolicyPage) {
+      res.status(200).json(RefundPolicyPage);
+    } else {
+      res.status(404).json({ message: "No RefundPolicyPage found" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+//-------------------------  Refund Policy Page ------------------------- //
+//------------------------- Terms Policy Page ------------------------- //
+
+export const createTermsPolicyPage = async (req, res) => {
+  try {
+    const { termsPolicyPage } = req.body;
+    let section = await Sections.findOne();
+    if (section) {
+      section.TermsPolicyPage = termsPolicyPage;
+      await section.save();
+    } else {
+      section = new Sections(termsPolicyPage);
+      await section.save();
+    }
+
+    res.status(200).json(section);
+  } catch (error) {
+    console.error("Error creating/updating TermsPolicyPage section:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+// Get about us page
+export const getTermsPolicyPage = async (req, res) => {
+  try {
+    const section = await Sections.findOne().sort({ createdAt: 1 });
+    const { TermsPolicyPage } = section;
+
+    if (TermsPolicyPage) {
+      res.status(200).json(TermsPolicyPage);
+    } else {
+      res.status(404).json({ message: "No TermsPolicyPage found" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+//-------------------------  Terms Policy Page ------------------------- //
