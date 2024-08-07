@@ -1,7 +1,7 @@
-const crypto = require('crypto');
+import crypto from 'crypto';
 
-exports.generateHashedOTP = (otp) => {
-  const hash = crypto .createHash('sha256');
+export const generateHashedOTP = (otp) => {
+  const hash = crypto.createHash('sha256');
   hash.update(otp.toString());
   return hash.digest("hex");
 };
