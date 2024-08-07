@@ -1,6 +1,8 @@
 import mongoose from "mongoose";
 import { fileURLToPath } from "url";
 import PropertyDetails from "../models/property.js";
+import pricingModel from "../models/pricing.js";
+import { log } from "console";
 const __filename = fileURLToPath(import.meta.url);
 
 export const propertyCreate = async (req, res) => {
@@ -8,7 +10,6 @@ export const propertyCreate = async (req, res) => {
     const {
       dateOfLaunch,
       propertyName,
-      GST,
       location,
       description,
       mealsDescription,
@@ -29,8 +30,31 @@ export const propertyCreate = async (req, res) => {
       host,
       seo,
       additionalHost,
-      user_id
+      user_id,
+      pricingModelName,
+      adultPersons,
     } = req.body;
+    let { GST } = req.body;
+    const personsCount = adultPersons >= 3 ? 3 : adultPersons;
+    if (pricingModelName) {
+      const PricingModels = await pricingModel.findOne({
+        ModelName: pricingModelName,
+        Persons: personsCount,
+      });
+
+      let cfAmount, gstAmount, finalPrice;
+      if (PricingModels.key === "Model1") {
+        GST = PricingModels.GST;
+        gstAmount = price * GST ?? 1;
+        cfAmount = price * PricingModels.CF;
+        finalPrice = price + gstAmount + cfAmount;
+      } else if (PricingModels.key === "Model2") {
+        GST = PricingModels.GST;
+        gstAmount = price * GST ?? 1;
+        // cfAmount = price * PricingModels.CF;
+        finalPrice = price + gstAmount;
+      }
+    }
 
     const newProperty = new PropertyDetails({
       dateOfLaunch,
@@ -42,6 +66,7 @@ export const propertyCreate = async (req, res) => {
       HouseRulesThingstoNote,
       LocationKnowHow,
       price,
+      finalPrice,
       capacity,
       amenities,
       collections,
@@ -56,7 +81,8 @@ export const propertyCreate = async (req, res) => {
       host,
       seo,
       additionalHost,
-      user_id
+      user_id,
+      pricingModel_id: PricingModels._id,
     });
 
     const property = await newProperty.save();

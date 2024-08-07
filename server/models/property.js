@@ -13,7 +13,7 @@ const locationSchema = new mongoose.Schema({
 
 const mealSchema = new mongoose.Schema({
   name: { type: String, required: false },
-  price: { type: String, required: false },
+  price: { type: Number, required: false },
   type: { type: String, required: false },
   time: { type: String, required: false },
   for: { type: String, required: false },
@@ -63,7 +63,8 @@ const propertySchema = new mongoose.Schema(
     mealsDescription: { type: String, required: false },
     HouseRulesThingstoNote: { type: String, required: false },
     LocationKnowHow: { type: String, required: false },
-    price: { type: String, required: false },
+    price: { type: Number, required: false },
+    finalPrice: { type: Number, required: false },
     capacity: { type: String, required: false },
     amenities: [
       {
@@ -108,6 +109,11 @@ const propertySchema = new mongoose.Schema(
     user_id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "users",
+      default: null,
+    },
+    pricingModel_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "pricingModel",
       default: null,
     },
   },
