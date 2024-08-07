@@ -189,7 +189,7 @@ export const createPrivacyPolicyPage = async (req, res) => {
 
     res.status(200).json(section);
   } catch (error) {
-    console.error("Error creating/updating About Us section:", error);
+    console.error("Error creating/updating createPrivacyPolicyPage section:", error);
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
@@ -227,7 +227,7 @@ export const createRefundPolicyPage = async (req, res) => {
 
     res.status(200).json(section);
   } catch (error) {
-    console.error("Error creating/updating About Us section:", error);
+    console.error("Error creating/updating createRefundPolicyPage section:", error);
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
