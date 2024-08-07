@@ -18,7 +18,7 @@ app.post(
   propertyValidate,
   validateMiddleware,
   // checkVendorAuthMiddleware,
-  checkAdminAuthMiddleware, 
+  // checkAdminAuthMiddleware, 
   propertyCreate
 );
 

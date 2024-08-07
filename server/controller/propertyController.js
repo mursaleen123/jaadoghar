@@ -29,6 +29,7 @@ export const propertyCreate = async (req, res) => {
       host,
       seo,
       additionalHost,
+      user_id
     } = req.body;
 
     const newProperty = new PropertyDetails({
@@ -55,7 +56,7 @@ export const propertyCreate = async (req, res) => {
       host,
       seo,
       additionalHost,
-      user_id: req.user._id,
+      user_id
     });
 
     const property = await newProperty.save();
