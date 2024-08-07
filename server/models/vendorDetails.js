@@ -7,6 +7,7 @@ const vendorDetailsSchema = new mongoose.Schema({
   secondaryEmail: { type: String, required: false },
   secondaryContact: { type: String, required: false },
   description: { type: String, required: false },
+  taxVerified: { type: Boolean, required: false },
 });
 
 const VendorDetails = mongoose.model("vendorDetails", vendorDetailsSchema);
