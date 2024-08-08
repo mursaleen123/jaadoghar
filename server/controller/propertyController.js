@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import { fileURLToPath } from "url";
 import PropertyDetails from "../models/property.js";
+import PropertyRooms from "../models/propertyRooms.js";
 const __filename = fileURLToPath(import.meta.url);
 
 export const propertyCreate = async (req, res) => {
@@ -29,7 +30,9 @@ export const propertyCreate = async (req, res) => {
       host,
       seo,
       additionalHost,
-      user_id
+      fee,
+      rooms,
+      user_id,
     } = req.body;
 
     const newProperty = new PropertyDetails({
@@ -42,6 +45,7 @@ export const propertyCreate = async (req, res) => {
       HouseRulesThingstoNote,
       LocationKnowHow,
       price,
+      fee,
       capacity,
       amenities,
       collections,
@@ -56,11 +60,20 @@ export const propertyCreate = async (req, res) => {
       host,
       seo,
       additionalHost,
-      user_id
+      user_id,
     });
 
     const property = await newProperty.save();
+    const propertyId = property._id;
 
+    const roomsWithPropertyId = rooms.map((room) => ({
+      ...room,
+      propertyId,
+    }));
+
+    await Promise.all(
+      roomsWithPropertyId.map((room) => addRoomToProperty(room))
+    );
     res.status(200).json({
       data: { property },
       success: true,
@@ -75,7 +88,42 @@ export const propertyCreate = async (req, res) => {
     });
   }
 };
+export const addRoomToProperty = async (room) => {
+  try {
+    const {
+      propertyId,
+      name,
+      capacity,
+      beds,
+      similarRooms,
+      size,
+      enquiry,
+      quickBook,
+      amenities,
+    } = room;
 
+    if (!propertyId || !name || !capacity || !beds || !size || !amenities) {
+      throw new Error("Missing required room details.");
+    }
+
+    const newRoom = new PropertyRooms({
+      propertyId,
+      name,
+      capacity,
+      beds,
+      similarRooms,
+      size,
+      enquiry,
+      quickBook,
+      amenities,
+    });
+
+    await newRoom.save();
+  } catch (error) {
+    console.error("Error in addRoomToProperty:", error); // Log the error for debugging
+    throw error; // Re-throw the error to be handled in the propertyCreate function
+  }
+};
 export const getProperties = async (req, res) => {
   try {
     let query = {};
@@ -84,7 +132,6 @@ export const getProperties = async (req, res) => {
       query = { user_id: req.user._id }; // Only get properties associated with the vendor
     }
 
-    // Fetch properties based on the query
     const properties = await PropertyDetails.find(query)
       .populate("amenities")
       .populate("filters")
