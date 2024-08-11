@@ -165,7 +165,6 @@ export const userRegister = async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       success: false,
-      error: error.message,
       message: error.message,
     });
   }

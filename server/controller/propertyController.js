@@ -108,7 +108,6 @@ export const propertyCreate = async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       success: false,
-      error: error.message,
       message: error.message,
     });
   }
@@ -173,7 +172,6 @@ export const getProperties = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message,
       message: error.message,
     });
   }
@@ -229,7 +227,7 @@ export const searchProperties = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message,
+      
       message: error.message,
     });
   }
@@ -260,7 +258,6 @@ export const getPropertyById = async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       success: false,
-      error: error.message,
       message: error.message,
     });
   }
@@ -290,7 +287,6 @@ export const updateProperty = async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       success: false,
-      error: error.message,
       message: error.message,
     });
   }
@@ -316,7 +312,6 @@ export const deleteProperty = async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       success: false,
-      error: error.message,
       message: error.message,
     });
   }

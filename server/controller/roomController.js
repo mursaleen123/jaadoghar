@@ -48,8 +48,7 @@ export const addRoomToProperty = async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       success: false,
-      error: error.message,
-      message: "An error occurred while adding the room.",
+      message: error.message
     });
   }
 };
@@ -76,7 +75,7 @@ export const addRoomToProperty = async (req, res) => {
 //   } catch (error) {
 //     res.status(500).json({
 //       success: false,
-//       error: error.message,
+//       
 //       message: error.message,
 //     });
 //   }
@@ -132,7 +131,7 @@ export const addRoomToProperty = async (req, res) => {
 //   } catch (error) {
 //     res.status(500).json({
 //       success: false,
-//       error: error.message,
+//       
 //       message: error.message,
 //     });
 //   }
@@ -162,7 +161,6 @@ export const addRoomToProperty = async (req, res) => {
 //   } catch (error) {
 //     return res.status(500).json({
 //       success: false,
-//       error: error.message,
 //       message: error.message,
 //     });
 //   }
@@ -192,7 +190,6 @@ export const addRoomToProperty = async (req, res) => {
 //   } catch (error) {
 //     return res.status(500).json({
 //       success: false,
-//       error: error.message,
 //       message: error.message,
 //     });
 //   }
@@ -217,7 +214,6 @@ export const deleteRoom = async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       success: false,
-      error: error.message,
       message: error.message,
     });
   }
