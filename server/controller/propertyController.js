@@ -31,7 +31,7 @@ export const propertyCreate = async (req, res) => {
       seo,
       additionalHost,
       fee,
-      rooms,
+      // rooms,
       user_id,
       pricingModelName,
       adultPersons,
@@ -91,15 +91,15 @@ export const propertyCreate = async (req, res) => {
     const property = await newProperty.save();
     const propertyId = property._id;
 
-    const roomsWithPropertyId = rooms.map((room) => ({
-      ...room,
-      propertyId,
-    }));
+    // const roomsWithPropertyId = rooms.map((room) => ({
+    //   ...room,
+    //   propertyId,
+    // }));
 
-    await Promise.all(
-      roomsWithPropertyId.map((room) => addRoomToProperty(room))
-    );
 
+    // await Promise.all(
+    //   roomsWithPropertyId.map((room) => addRoomToProperty(room))
+    // );
     res.status(200).json({
       status: true,
       data: property,
