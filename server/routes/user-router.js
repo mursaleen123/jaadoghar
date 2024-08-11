@@ -1,6 +1,6 @@
-const express = require("express");
-const config = require("../configs");
-const {
+import express from 'express';
+import config from '../configs/index.js'; // Ensure the correct path and file extension
+import {
   userRegister,
   otpVerify,
   userLogin,
@@ -11,24 +11,32 @@ const {
   getUserListing,
   getVendorListing,
   updateUser,
-} = require("../controller/userController");
-const {
+} from '../controller/userController.js'; // Ensure the correct path and file extension
+import {
   checkAuthMiddleware,
   checkAdminAuthMiddleware,
-} = require("../middlewares");
+} from '../middlewares.js'; // Ensure the correct path and file extension
+import {
+  validateRegister,
+  validateLogin,
+  validateOtp,
+  resendOtp,
+  forgetpassword,
+  passwordchange,
+} from '../validators/authValidator.js'; // Ensure the correct path and file extension
+import validateMiddleware from '../middlewares/validationMiddleware.js'; // Ensure the correct path and file extension
 
 const app = express();
 
-app.post("/register", userRegister);
-app.post("/verify-otp", otpVerify);
-app.post("/resend-otp", otpResend);
-app.post("/login", userLogin);
-app.post("/forget", forgetPassword);
-app.post("/password-change", passwordChange);
-app.get("/getUser", checkAuthMiddleware, getUser);
-// app.get("/getUserListing", checkAdminAuthMiddleware, getUserListing);
-app.get("/getUserListing", getUserListing);
-app.get("/getVendorListing", getVendorListing);
-app.post("/updateUser", checkAuthMiddleware, updateUser);
+app.post('/register', validateRegister, validateMiddleware, userRegister);
+app.post('/verify-otp', validateOtp, validateMiddleware, otpVerify);
+app.post('/resend-otp', resendOtp, validateMiddleware, otpResend);
+app.post('/login', validateLogin, validateMiddleware, userLogin);
+app.post('/forget', forgetpassword, validateMiddleware, forgetPassword);
+app.post('/password-change', passwordchange, validateMiddleware, passwordChange);
+app.get('/getUser', checkAuthMiddleware, getUser);
+app.get('/getUserListing', getUserListing); // Uncomment if needed: checkAdminAuthMiddleware
+app.get('/getVendorListing', getVendorListing);
+app.post('/updateUser', checkAuthMiddleware, updateUser);
 
-module.exports = app;
+export default app;

@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema(
   {
@@ -15,9 +15,19 @@ const userSchema = new mongoose.Schema(
       default: "user",
       required: true,
     },
+    bank_details_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "bankDetails",
+      default: null,
+    },
+    vendor_details_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "vendorDetails",
+      default: null,
+    },
   },
   { timestamps: true }
 );
 
 const Users = mongoose.model("users", userSchema);
-module.exports = Users;
+export default Users;
