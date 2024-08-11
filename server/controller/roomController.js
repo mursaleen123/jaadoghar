@@ -39,11 +39,11 @@ export const addRoomToProperty = async (req, res) => {
     // Save the room document to the database
     const savedRoom = await newRoom.save();
 
+  
     res.status(200).json({
+      status: true,
       data: savedRoom,
-      success: true,
-      message: "Room Added Successfully",
-      code: "roomCreateAPI",
+      message: "Room Added Successfull",
     });
   } catch (error) {
     return res.status(500).json({

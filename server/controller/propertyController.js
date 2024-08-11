@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import { fileURLToPath } from "url";
 import PropertyDetails from "../models/property.js";
+import pricingModel from "../models/pricing.js";
 import PropertyRooms from "../models/propertyRooms.js";
 const __filename = fileURLToPath(import.meta.url);
 
@@ -9,7 +10,6 @@ export const propertyCreate = async (req, res) => {
     const {
       dateOfLaunch,
       propertyName,
-      GST,
       location,
       description,
       mealsDescription,
@@ -33,7 +33,30 @@ export const propertyCreate = async (req, res) => {
       fee,
       rooms,
       user_id,
+      pricingModelName,
+      adultPersons,
     } = req.body;
+    let { GST } = req.body;
+    const personsCount = adultPersons >= 3 ? 3 : adultPersons;
+    if (pricingModelName) {
+      const PricingModels = await pricingModel.findOne({
+        ModelName: pricingModelName,
+        Persons: personsCount,
+      });
+
+      let cfAmount, gstAmount, finalPrice;
+      if (PricingModels.key === "Model1") {
+        GST = PricingModels.GST;
+        gstAmount = price * GST ?? 1;
+        cfAmount = price * PricingModels.CF;
+        finalPrice = price + gstAmount + cfAmount;
+      } else if (PricingModels.key === "Model2") {
+        GST = PricingModels.GST;
+        gstAmount = price * GST ?? 1;
+        // cfAmount = price * PricingModels.CF;
+        finalPrice = price + gstAmount;
+      }
+    }
 
     const newProperty = new PropertyDetails({
       dateOfLaunch,
@@ -46,6 +69,7 @@ export const propertyCreate = async (req, res) => {
       LocationKnowHow,
       price,
       fee,
+      finalPrice,
       capacity,
       amenities,
       collections,
@@ -61,6 +85,7 @@ export const propertyCreate = async (req, res) => {
       seo,
       additionalHost,
       user_id,
+      pricingModel_id: PricingModels._id,
     });
 
     const property = await newProperty.save();
@@ -74,11 +99,11 @@ export const propertyCreate = async (req, res) => {
     await Promise.all(
       roomsWithPropertyId.map((room) => addRoomToProperty(room))
     );
+
     res.status(200).json({
-      data: { property },
-      success: true,
-      message: "Property Added Successfully",
-      code: "propertyCreateAPI",
+      status: true,
+      data: property,
+      message: "Property Added successfully.",
     });
   } catch (error) {
     return res.status(500).json({
@@ -88,6 +113,7 @@ export const propertyCreate = async (req, res) => {
     });
   }
 };
+
 export const addRoomToProperty = async (room) => {
   try {
     const {
@@ -124,6 +150,7 @@ export const addRoomToProperty = async (room) => {
     throw error; // Re-throw the error to be handled in the propertyCreate function
   }
 };
+
 export const getProperties = async (req, res) => {
   try {
     let query = {};
@@ -139,9 +166,9 @@ export const getProperties = async (req, res) => {
       .populate("experiences");
 
     res.status(200).json({
-      data: { properties },
-      success: true,
-      message: "Properties Retrieved Successfully",
+      status: true,
+      data: properties,
+      message: "Properties Properties successfully.",
     });
   } catch (error) {
     res.status(500).json({
@@ -195,9 +222,9 @@ export const searchProperties = async (req, res) => {
       ]);
     }
     res.status(200).json({
-      data: { properties },
-      success: true,
-      message: "Searched Property",
+      status: true,
+      data: properties,
+      message: " Searched Property.",
     });
   } catch (error) {
     res.status(500).json({
@@ -224,10 +251,11 @@ export const getPropertyById = async (req, res) => {
       });
     }
 
+   
     res.status(200).json({
-      data: { property },
-      success: true,
-      message: "Property Retrieved Successfully",
+      status: true,
+      data: property,
+      message: "Property Retrieved Successfull",
     });
   } catch (error) {
     return res.status(500).json({
@@ -255,9 +283,9 @@ export const updateProperty = async (req, res) => {
     }
 
     res.status(200).json({
-      data: { property },
-      success: true,
-      message: "Property Updated Successfully",
+      status: true,
+      data: property,
+      message: "Property Updated Successfull",
     });
   } catch (error) {
     return res.status(500).json({
@@ -281,8 +309,9 @@ export const deleteProperty = async (req, res) => {
     }
 
     res.status(200).json({
-      success: true,
-      message: "Property Deleted Successfully",
+      status: true,
+      data: [],
+      message: "Property Deleted Successfull",
     });
   } catch (error) {
     return res.status(500).json({

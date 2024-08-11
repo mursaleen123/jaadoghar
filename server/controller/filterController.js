@@ -6,17 +6,25 @@ export const filterCreate = async (req, res) => {
     const { name, status, description } = req.body;
     const newFilters = new Filters({ name, status, description });
     await newFilters.save();
-    res.status(201).json(newFilters);
+    res.status(200).json({
+      status: true,
+      data: newFilters,
+      message: "Filter Created successfully.",
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// Get all amenities
+// Get all getFilters
 export const getFilters = async (req, res) => {
   try {
     const filters = await Filters.find({ status: "enable" });
-    res.status(200).json(filters);
+    res.status(200).json({
+      status: true,
+      data: filters,
+      message: "Filters Fetched successfully.",
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -29,7 +37,11 @@ export const getfilterById = async (req, res) => {
     if (!filter) {
       return res.status(404).json({ message: "Filter not found" });
     }
-    res.status(200).json(filter);
+    res.status(200).json({
+      status: true,
+      data: filter,
+      message: "Filter Fetched successfully.",
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -47,7 +59,11 @@ export const updateFilter = async (req, res) => {
     if (!updatedFilter) {
       return res.status(404).json({ message: "Filter not found" });
     }
-    res.status(200).json(updatedFilter);
+    res.status(200).json({
+      status: true,
+      data: updatedFilter,
+      message: "Filter Updated successfully.",
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -60,7 +76,11 @@ export const deleteFilter = async (req, res) => {
     if (!deletedFilter) {
       return res.status(404).json({ message: "Filter not found" });
     }
-    res.status(200).json({ message: "Filter deleted successfully" });
+    res.status(200).json({
+      status: true,
+      data: [],
+      message: "Filter deleted successfully.",
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

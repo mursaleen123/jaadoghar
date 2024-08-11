@@ -36,7 +36,11 @@ export const createExperience = async (req, res) => {
     });
     await newExperience.save();
 
-    res.status(201).json(newExperience);
+    res.status(200).json({
+      status: true,
+      data: newExperience,
+      message: "Experience Added successfully.",
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -46,7 +50,12 @@ export const createExperience = async (req, res) => {
 export const getExperienes = async (req, res) => {
   try {
     const experience = await Experience.find();
-    res.status(200).json(experience);
+    
+    res.status(200).json({
+      status: true,
+      data: experience,
+      message: "Experiences Fetched successfully.",
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -59,7 +68,11 @@ export const getExperieneById = async (req, res) => {
     if (!experience) {
       return res.status(404).json({ message: "Experience not found" });
     }
-    res.status(200).json(experience);
+    res.status(200).json({
+      status: true,
+      data: experience,
+      message: "Experience Fetched successfully.",
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -110,7 +123,11 @@ export const updateExperience = async (req, res) => {
       return res.status(404).json({ message: "Experience not found" });
     }
 
-    res.status(200).json(updatedExperience);
+    res.status(200).json({
+      status: true,
+      data: updatedExperience,
+      message: "Experience Updated successfully.",
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -123,7 +140,11 @@ export const deleteExperience = async (req, res) => {
     if (!deletedExperience) {
       return res.status(404).json({ message: "Experience not found" });
     }
-    res.status(200).json({ message: "Experience deleted successfully" });
+    res.status(200).json({
+      status: true,
+      data: [],
+      message: "Experience Deleted successfully.",
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

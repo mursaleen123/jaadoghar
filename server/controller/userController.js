@@ -146,7 +146,10 @@ export const userRegister = async (req, res) => {
     user.otp = generateHashedOTP(otp);
 
     await user.save();
+    
+
     res.status(200).json({
+      status: true,
       data: {
         id: user._id,
         name: user.name,
@@ -157,9 +160,7 @@ export const userRegister = async (req, res) => {
         role: user.role,
         referralCode: user.referralCode,
       },
-      success: true,
       message: "OTP sent successfully. Please check your inbox or spam folder",
-      code: "registerAPI",
     });
   } catch (error) {
     return res.status(500).json({
@@ -215,7 +216,6 @@ export const userLogin = async (req, res) => {
       },
       success: true,
       message: "logged in successfully.",
-      code: "LoginAPI",
     });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -316,6 +316,7 @@ export const otpResend = async (req, res) => {
 
     return res.status(200).json({
       success: true,
+      data:[],
       message: "OTP sent successfully. Please check your inbox or spam folder.",
     });
   } catch (error) {

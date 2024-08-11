@@ -19,7 +19,11 @@ export const createCollection = async (req, res) => {
     const newCollection = new Collection({ name, imageUrl, description });
     await newCollection.save();
 
-    res.status(201).json(newCollection);
+    res.status(200).json({
+      status: true,
+      data: newCollection,
+      message: "Collection Created successfully.",
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -29,7 +33,11 @@ export const createCollection = async (req, res) => {
 export const getCollections = async (req, res) => {
   try {
     const collections = await Collection.find();
-    res.status(200).json(collections);
+    res.status(200).json({
+      status: true,
+      data: collections,
+      message: "Collections Fetched successfully.",
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -42,7 +50,11 @@ export const getCollectionById = async (req, res) => {
     if (!collection) {
       return res.status(404).json({ message: "Collection not found" });
     }
-    res.status(200).json(collection);
+    res.status(200).json({
+      status: true,
+      data: collection,
+      message: "Collection Fetched successfully.",
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -76,7 +88,11 @@ export const updateCollection = async (req, res) => {
       return res.status(404).json({ message: "Collection not found" });
     }
 
-    res.status(200).json(updatedCollection);
+    res.status(200).json({
+      status: true,
+      data: updatedCollection,
+      message: "Collection Updated successfully.",
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -89,7 +105,11 @@ export const deleteCollection = async (req, res) => {
     if (!deletedCollection) {
       return res.status(404).json({ message: "Collection not found" });
     }
-    res.status(200).json({ message: "Collection deleted successfully" });
+    res.status(200).json({
+      status: true,
+      data: [],
+      message: "Collection deleted successfully.",
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
