@@ -31,30 +31,35 @@ export const propertyCreate = async (req, res) => {
       seo,
       additionalHost,
       fee,
-      // rooms,
       user_id,
       pricingModelName,
       adultPersons,
+      destinations,
     } = req.body;
+
     let { GST } = req.body;
     const personsCount = adultPersons >= 3 ? 3 : adultPersons;
+    let finalPrice = price;
+    let PricingModels;
+
     if (pricingModelName) {
-      const PricingModels = await pricingModel.findOne({
+      PricingModels = await pricingModel.findOne({
         ModelName: pricingModelName,
         Persons: personsCount,
       });
 
-      let cfAmount, gstAmount, finalPrice;
-      if (PricingModels.key === "Model1") {
+      let gstAmount, cfAmount;
+
+      if (PricingModels) {
         GST = PricingModels.GST;
         gstAmount = price * GST ?? 1;
-        cfAmount = price * PricingModels.CF;
-        finalPrice = price + gstAmount + cfAmount;
-      } else if (PricingModels.key === "Model2") {
-        GST = PricingModels.GST;
-        gstAmount = price * GST ?? 1;
-        // cfAmount = price * PricingModels.CF;
-        finalPrice = price + gstAmount;
+
+        if (PricingModels.key === "Model1") {
+          cfAmount = price * PricingModels.CF;
+          finalPrice = price + gstAmount + cfAmount;
+        } else if (PricingModels.key === "Model2") {
+          finalPrice = price + gstAmount;
+        }
       }
     }
 
@@ -64,12 +69,13 @@ export const propertyCreate = async (req, res) => {
       GST,
       location,
       description,
+      destinations,
       mealsDescription,
       HouseRulesThingstoNote,
       LocationKnowHow,
       price,
       fee,
-      finalPrice,
+      finalPrice, // Use finalPrice here
       capacity,
       amenities,
       collections,
@@ -85,7 +91,7 @@ export const propertyCreate = async (req, res) => {
       seo,
       additionalHost,
       user_id,
-      pricingModel_id: PricingModels._id,
+      pricingModel_id: PricingModels?._id,
     });
 
     const property = await newProperty.save();
@@ -95,7 +101,6 @@ export const propertyCreate = async (req, res) => {
     //   ...room,
     //   propertyId,
     // }));
-
 
     // await Promise.all(
     //   roomsWithPropertyId.map((room) => addRoomToProperty(room))
@@ -162,6 +167,7 @@ export const getProperties = async (req, res) => {
       .populate("amenities")
       .populate("filters")
       .populate("collections")
+      .populate("destinations")
       .populate("experiences");
 
     res.status(200).json({
@@ -227,7 +233,7 @@ export const searchProperties = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       success: false,
-      
+
       message: error.message,
     });
   }
@@ -239,6 +245,7 @@ export const getPropertyById = async (req, res) => {
     const property = await PropertyDetails.findById(id)
       .populate("amenities")
       .populate("filters")
+      .populate("destinations")
       .populate("collections")
       .populate("experiences");
 
@@ -249,7 +256,6 @@ export const getPropertyById = async (req, res) => {
       });
     }
 
-   
     res.status(200).json({
       status: true,
       data: property,
