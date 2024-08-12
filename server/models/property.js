@@ -94,6 +94,13 @@ const propertySchema = new mongoose.Schema(
         required: false,
       },
     ],
+    destinations: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Destinations",
+        required: false,
+      },
+    ],
     experiences: [
       {
         type: mongoose.Schema.Types.ObjectId,
