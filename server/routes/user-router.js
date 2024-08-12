@@ -25,6 +25,7 @@ import {
   passwordchange,
 } from "../validators/authValidator.js";
 import validateMiddleware from "../middlewares/validationMiddleware.js";
+import { upload } from "../helpers/uploadFile.js";
 
 const app = express();
 
