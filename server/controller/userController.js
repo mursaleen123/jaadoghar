@@ -49,6 +49,15 @@ export const userRegister = async (req, res) => {
       bank_details,
     } = req.body;
 
+    const imageUrl = req.file
+      ? `/images/${folder.toLowerCase()}/${req.file.filename}`
+      : null;
+
+    const uploadPath = path.join("public/images", folder);
+    if (!fs.existsSync(uploadPath)) {
+      fs.mkdirSync(uploadPath, { recursive: true });
+    }
+
     if (!(name && phone_no && email && password)) {
       return res.status(400).json({
         success: false,
@@ -83,6 +92,7 @@ export const userRegister = async (req, res) => {
       password: hashedPassword,
       name,
       phone_no,
+      imageUrl,
     });
     const user = await newUser.save();
 
@@ -134,19 +144,18 @@ export const userRegister = async (req, res) => {
           name: user?.name,
         }),
       };
-      // await sendEmail(mailOptions, function (error, info) {
-      //   if (error) {
-      //     return res.status(400).json({
-      //       success: false,
-      //       message: error,
-      //     });
-      //   }
-      // });
+      await sendEmail(mailOptions, function (error, info) {
+        if (error) {
+          return res.status(400).json({
+            success: false,
+            message: error,
+          });
+        }
+      });
     }
     user.otp = generateHashedOTP(otp);
 
     await user.save();
-    
 
     res.status(200).json({
       status: true,
@@ -315,7 +324,7 @@ export const otpResend = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      data:[],
+      data: [],
       message: "OTP sent successfully. Please check your inbox or spam folder.",
     });
   } catch (error) {
@@ -444,7 +453,14 @@ export const getUser = async (req, res) => {
 export const updateUser = async (req, res) => {
   try {
     const { id, name, phone_no, email, role } = req.body;
+    const imageUrl = req.file
+      ? `/images/${folder.toLowerCase()}/${req.file.filename}`
+      : null;
 
+    const uploadPath = path.join("public/images", folder);
+    if (!fs.existsSync(uploadPath)) {
+      fs.mkdirSync(uploadPath, { recursive: true });
+    }
     if (!(name && phone_no && email && role)) {
       return res.status(400).json({
         success: false,
@@ -475,6 +491,7 @@ export const updateUser = async (req, res) => {
 
     user.email = email;
     user.name = name;
+    user.imageUrl = imageUrl;
     user.phone_no = phone_no;
     user.countries = countries;
     user.save();
