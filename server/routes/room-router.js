@@ -34,7 +34,7 @@ app.post(
   "/addRoomToProperty",
   // checkVendorAuthMiddleware,
   // checkAdminAuthMiddleware,
-  upload.array("uploadRoomImages", 10),
+  uploadRoomImages,
   addRoomToProperty
 );
 
