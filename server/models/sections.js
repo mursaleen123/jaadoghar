@@ -33,7 +33,7 @@ const homeSchema = new mongoose.Schema({
   destinationSection: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Collection",
+      ref: "Destinations",
       required: false,
     },
   ],

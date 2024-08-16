@@ -76,7 +76,6 @@ export const createAboutUs = async (req, res) => {
             })),
           },
         },
-        
       };
 
       section = new Sections(newSectionData);
@@ -134,24 +133,40 @@ export const createHomePage = async (req, res) => {
           imageUrl: imageUrls.HeroSectionImage[0],
         };
       }
+      if (imageUrls.FeatureSectionImage) {
+        const mergedFeatureSection = HomePage.featureSection
+          ? { ...HomePage.featureSection }
+          : { ...section.HomePage.featureSection };
+
+        section.HomePage.featureSection = {
+          ...mergedFeatureSection,
+          imageUrl: imageUrls.FeatureSectionImage[0],
+        };
+
+      }
 
       section = Object.assign(section, HomePage);
+      console.log(section);
 
       if (HomePage.collectionSection) {
         section.HomePage.collectionSection = HomePage.collectionSection;
       }
-      if (HomePage.experiencesSection) {
+      if (HomePage.destinationSection) {
         section.HomePage.experiencesSection = HomePage.experiencesSection;
+      }
+      if (HomePage.destinationSection) {
+        section.HomePage.destinationSection = HomePage.destinationSection;
       }
       await section.save();
     } else {
       HomePage.heroSection.imageUrl =
         imageUrls.HeroSectionImage && imageUrls.HeroSectionImage.length > 0
           ? imageUrls.HeroSectionImage[0]
-          : {};
+          : null;
 
       HomePage.collectionSection = HomePage.collectionSection || [];
       HomePage.experiencesSection = HomePage.experiencesSection || [];
+      HomePage.destinationSection = HomePage.destinationSection || [];
 
       section.HomePage = HomePage;
 
@@ -170,7 +185,8 @@ export const getHomePage = async (req, res) => {
     const section = await Sections.findOne()
       .sort({ createdAt: 1 })
       .populate("HomePage.collectionSection")
-      .populate("HomePage.experiencesSection");
+      .populate("HomePage.experiencesSection")
+      .populate("HomePage.destinationSection");
     const { HomePage } = section;
 
     if (HomePage) {
