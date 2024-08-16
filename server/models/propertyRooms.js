@@ -10,6 +10,7 @@ const propertyRoomSchema = new mongoose.Schema({
   enquiry: { type: Boolean, required: false },
   quickBook: { type: Boolean, required: false },  
   description: { type: String, required: false },
+  price: { type: String, required: false },
   images: [
     {
       imageUrl: { type: String, required: false },
