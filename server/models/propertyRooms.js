@@ -8,7 +8,7 @@ const propertyRoomSchema = new mongoose.Schema({
   beds: { type: Number, required: false },
   similarRooms: { type: Number, required: false },
   enquiry: { type: Boolean, required: false },
-  quickBook: { type: Boolean, required: false },  // Corrected the schema definition here
+  quickBook: { type: Boolean, required: false },  
   description: { type: String, required: false },
   images: [
     {

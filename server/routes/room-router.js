@@ -9,51 +9,68 @@ import {
 
 import validateMiddleware from "../middlewares/validationMiddleware.js"; // Ensure the correct path and file extension
 import { propertyValidate } from "../validators/propertyValidator.js";
-import { deleteProperty, getProperties, getPropertyById, propertyCreate, searchProperties, updateProperty } from "../controller/propertyController.js";
-import { addRoomToProperty, deleteRoom } from "../controller/roomController.js";
+import {
+  deleteProperty,
+  getProperties,
+  getPropertyById,
+  propertyCreate,
+  searchProperties,
+  updateProperty,
+} from "../controller/propertyController.js";
+import {
+  addRoomToProperty,
+  deleteRoom,
+  getRooms,
+  getRoomsById,
+  getRoomsByPropertyId,
+  updateRoom,
+} from "../controller/roomController.js";
 import { upload } from "../helpers/uploadFile.js";
 
 const app = express();
 
+const uploadRoomImages = upload.fields([{ name: "image", maxCount: 10 }]);
 app.post(
   "/addRoomToProperty",
   // checkVendorAuthMiddleware,
-  // checkAdminAuthMiddleware, 
-  upload.none('image'),  
+  // checkAdminAuthMiddleware,
+  upload.array("uploadRoomImages", 10),
   addRoomToProperty
 );
 
-// // Get all properties
-// app.get(
-//   '/getProperties',
-//   checkAuthMiddleware,
-//   getProperties
-// );
+// Get all Rooms
+app.get(
+  "/getRooms",
+  // checkAuthMiddleware,
+  getRooms
+);
 
-// // Get all properties
-// app.get(
-//   '/searchProperties',
-//   searchProperties
-// );
+// Get a Room by ID
+app.get(
+  "/getRoomsById/:id",
+  // checkAuthMiddleware,
+  getRoomsById
+);
+// Get a Rooms by  propertyID
+app.get(
+  "/getRoomsByPropertyId/:id",
+  // checkAuthMiddleware,
+  getRoomsByPropertyId
+);
 
-// // Get a specific property by ID
-// app.get(
-//   '/getProperty/:id',
-//   checkAuthMiddleware,
-//   getPropertyById
-// );
-
-// // Update a property by ID
-// app.put(
-//   '/updateProperty/:id', 
-//   checkAdminAuthMiddleware,
-//   updateProperty
-// );
+// Update a room by ID
+app.put(
+  "/updateRoom/:id",
+  // checkAdminAuthMiddleware,
+  upload.none("image"),
+  updateRoom
+);
 
 // Delete a Room by ID
 app.delete(
-  '/deleteRoom/:id',
-  // checkAdminAuthMiddleware,
+  "/deleteRoom/:id",
+  // checkAdminAuthMiddleware,\
+  upload.none("image"),
   deleteRoom
 );
 export default app;
