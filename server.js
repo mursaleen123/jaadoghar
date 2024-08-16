@@ -18,6 +18,7 @@ import sectionRouter from "./server/routes/section-router.js";
 import roomRouter from "./server/routes/room-router.js";
 import pricingModelRouter from "./server/routes/pricingModel-router.js";
 import destinationRouter from "./server/routes/destination-router.js";
+import faqsRouter from "./server/routes/faqs-router.js";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -38,6 +39,7 @@ app.use("/api/v1", sectionRouter);
 app.use("/api/v1", roomRouter);
 app.use("/api/v1", pricingModelRouter);
 app.use("/api/v1", destinationRouter);
+app.use("/api/v1", faqsRouter);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
