@@ -47,6 +47,8 @@ const uploadHomePageImages = upload.fields([
   { name: "HeroSectionImage", maxCount: 1 }, 
   { name: "FeatureSectionImage", maxCount: 1 }, 
   { name: "knowMoreSectionImage", maxCount: 1 }, 
+  { name: "hostSectionImage", maxCount: 1 }, 
+  { name: "aboutUsSectionImage", maxCount: 1 }, 
 ]);
 app.post(
   "/createHomePage",

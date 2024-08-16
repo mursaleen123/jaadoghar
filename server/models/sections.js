@@ -67,6 +67,7 @@ const homeSchema = new mongoose.Schema({
     title: { type: String, required: false },
     description: { type: String, required: false },
     url: { type: String, required: false },
+    imageUrl: { type: String, required: false },
   },
   benefitsSection: {
     cards: [

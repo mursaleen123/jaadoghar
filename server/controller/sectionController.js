@@ -153,6 +153,26 @@ export const createHomePage = async (req, res) => {
           imageUrl: imageUrls.knowMoreSectionImage[0],
         };
       }
+      if (imageUrls.hostSectionImage) {
+        const mergedhostSection = HomePage.hostSection
+          ? { ...HomePage.hostSection }
+          : { ...section.HomePage.hostSection };
+
+        section.HomePage.hostSection = {
+          ...mergedhostSection,
+          imageUrl: imageUrls.hostSectionImage[0],
+        };
+      }
+      if (imageUrls.aboutUsSectionImage) {
+        const mergedaboutUsSection = HomePage.aboutUsSection
+          ? { ...HomePage.aboutUsSection }
+          : { ...section.HomePage.aboutUsSection };
+
+        section.HomePage.aboutUsSection = {
+          ...mergedaboutUsSection,
+          imageUrl: imageUrls.aboutUsSectionImage[0],
+        };
+      }
 
       section = Object.assign(section, HomePage);
 
@@ -172,22 +192,32 @@ export const createHomePage = async (req, res) => {
           ? imageUrls.HeroSectionImage[0]
           : null;
 
-          HomePage.featureSection = {
-            ...HomePage.featureSection,
-            imageUrl:
-              imageUrls.FeatureSectionImage && imageUrls.FeatureSectionImage.length > 0
-                ? imageUrls.FeatureSectionImage[0]
-                : null,
-          };
-    
-          HomePage.knowMoreSection = {
-            ...HomePage.knowMoreSection,
-            imageUrl:
-              imageUrls.knowMoreSectionImage && imageUrls.knowMoreSectionImage.length > 0
-                ? imageUrls.knowMoreSectionImage[0]
-                : null,
-          };
-          
+      HomePage.featureSection = {
+        ...HomePage.featureSection,
+        imageUrl:
+          imageUrls.FeatureSectionImage &&
+          imageUrls.FeatureSectionImage.length > 0
+            ? imageUrls.FeatureSectionImage[0]
+            : null,
+      };
+
+      HomePage.knowMoreSection = {
+        ...HomePage.knowMoreSection,
+        imageUrl:
+          imageUrls.knowMoreSectionImage &&
+          imageUrls.knowMoreSectionImage.length > 0
+            ? imageUrls.knowMoreSectionImage[0]
+            : null,
+      };
+
+      HomePage.aboutUsSection = {
+        ...HomePage.aboutUsSection,
+        imageUrl:
+          imageUrls.aboutUsSectionImage &&
+          imageUrls.aboutUsSectionImage.length > 0
+            ? imageUrls.aboutUsSectionImage[0]
+            : null,
+      };
 
       HomePage.collectionSection = HomePage.collectionSection || [];
       HomePage.experiencesSection = HomePage.experiencesSection || [];
