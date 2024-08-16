@@ -142,11 +142,19 @@ export const createHomePage = async (req, res) => {
           ...mergedFeatureSection,
           imageUrl: imageUrls.FeatureSectionImage[0],
         };
+      }
+      if (imageUrls.knowMoreSectionImage) {
+        const mergedknowMoreSection = HomePage.knowMoreSection
+          ? { ...HomePage.knowMoreSection }
+          : { ...section.HomePage.knowMoreSection };
 
+        section.HomePage.knowMoreSection = {
+          ...mergedknowMoreSection,
+          imageUrl: imageUrls.knowMoreSectionImage[0],
+        };
       }
 
       section = Object.assign(section, HomePage);
-      console.log(section);
 
       if (HomePage.collectionSection) {
         section.HomePage.collectionSection = HomePage.collectionSection;
@@ -163,6 +171,23 @@ export const createHomePage = async (req, res) => {
         imageUrls.HeroSectionImage && imageUrls.HeroSectionImage.length > 0
           ? imageUrls.HeroSectionImage[0]
           : null;
+
+          HomePage.featureSection = {
+            ...HomePage.featureSection,
+            imageUrl:
+              imageUrls.FeatureSectionImage && imageUrls.FeatureSectionImage.length > 0
+                ? imageUrls.FeatureSectionImage[0]
+                : null,
+          };
+    
+          HomePage.knowMoreSection = {
+            ...HomePage.knowMoreSection,
+            imageUrl:
+              imageUrls.knowMoreSectionImage && imageUrls.knowMoreSectionImage.length > 0
+                ? imageUrls.knowMoreSectionImage[0]
+                : null,
+          };
+          
 
       HomePage.collectionSection = HomePage.collectionSection || [];
       HomePage.experiencesSection = HomePage.experiencesSection || [];
