@@ -53,13 +53,19 @@ export const createAboutUs = async (req, res) => {
       // Create new section
       const newSectionData = {
         aboutUs: {
-          ...aboutUs,
-          firstSection: imageUrls.sectionOneImage
-            ? { imageUrl: imageUrls.sectionOneImage[0] }
-            : {},
-          thirdSection: imageUrls.sectionThirdImage
-            ? { imageUrl: imageUrls.sectionThirdImage[0] }
-            : {},
+          // ...aboutUs,
+          firstSection: {
+            ...aboutUs.firstSection,
+            imageUrl: imageUrls.sectionOneImage
+              ? imageUrls.sectionOneImage[0]
+              : aboutUs.firstSection.imageUrl,
+          },
+          thirdSection: {
+            ...aboutUs.thirdSection,
+            imageUrl: imageUrls.sectionThirdImage
+              ? imageUrls.sectionThirdImage[0]
+              : aboutUs.thirdSection.imageUrl,
+          },
           secondSection: {
             ...aboutUs.secondSection,
             cards: aboutUs.secondSection.cards.map((card, index) => ({
@@ -70,6 +76,7 @@ export const createAboutUs = async (req, res) => {
             })),
           },
         },
+        
       };
 
       section = new Sections(newSectionData);
@@ -87,7 +94,11 @@ export const createAboutUs = async (req, res) => {
 export const getAboutUs = async (req, res) => {
   try {
     const section = await Sections.findOne().sort({ createdAt: 1 });
-    const { aboutUs } = section;
+    if (section) {
+      const { aboutUs } = section;
+    } else {
+      res.status(404).json({ message: "No aboutUs found" });
+    }
 
     if (aboutUs) {
       res.status(200).json(aboutUs);
@@ -189,7 +200,10 @@ export const createPrivacyPolicyPage = async (req, res) => {
 
     res.status(200).json(section);
   } catch (error) {
-    console.error("Error creating/updating createPrivacyPolicyPage section:", error);
+    console.error(
+      "Error creating/updating createPrivacyPolicyPage section:",
+      error
+    );
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
@@ -227,7 +241,10 @@ export const createRefundPolicyPage = async (req, res) => {
 
     res.status(200).json(section);
   } catch (error) {
-    console.error("Error creating/updating createRefundPolicyPage section:", error);
+    console.error(
+      "Error creating/updating createRefundPolicyPage section:",
+      error
+    );
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
