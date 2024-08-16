@@ -17,15 +17,16 @@ export const addRoomToProperty = async (req, res) => {
       quickBook,
       description,
       folder,
+      price,
       amenities,
     } = req.body;
-
-    // Ensure folder is defined and sanitized
+    let images;
     const folderPath = folder ? folder.toLowerCase() : "rooms";
-
-    const images = req.files["image"].map((file) => ({
-      imageUrl: `/images/${folderPath}/${file.filename}`,
-    }));
+    if (req.files["image"]) {
+      images = req.files["image"].map((file) => ({
+        imageUrl: `/images/${folderPath}/${file.filename}`,
+      }));
+    }
 
     const newRoom = new PropertyRooms({
       propertyId,
@@ -38,6 +39,7 @@ export const addRoomToProperty = async (req, res) => {
       quickBook,
       description,
       images,
+      price,
       amenities,
     });
 
@@ -137,6 +139,7 @@ export const updateRoom = async (req, res) => {
       similarRooms,
       enquiry,
       quickBook,
+      price,
       description,
       amenities,
     } = req.body;
@@ -152,7 +155,8 @@ export const updateRoom = async (req, res) => {
         enquiry,
         quickBook,
         description,
-        // images, // Include images if you want to allow updates for this field
+        price,
+        // images,
         amenities,
       },
       { new: true }
