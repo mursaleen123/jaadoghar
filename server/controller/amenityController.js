@@ -19,7 +19,11 @@ export const createAmenity = async (req, res) => {
     const newAmenity = new Amenities({ name, type, imageUrl, description });
     await newAmenity.save();
 
-    res.status(201).json(newAmenity);
+    res.status(200).json({
+      status: true,
+      data: newAmenity,
+      message: "Amenity Created successfully.",
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -29,7 +33,11 @@ export const createAmenity = async (req, res) => {
 export const getAmenities = async (req, res) => {
   try {
     const amenities = await Amenities.find();
-    res.status(200).json(amenities);
+    res.status(200).json({
+      status: true,
+      data: amenities,
+      message: "Amenities Fetched successfully.",
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -42,7 +50,11 @@ export const getAmenityById = async (req, res) => {
     if (!amenity) {
       return res.status(404).json({ message: "Amenity not found" });
     }
-    res.status(200).json(amenity);
+    res.status(200).json({
+      status: true,
+      data: amenity,
+      message: "Amenity Fetched successfully.",
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -79,7 +91,11 @@ export const updateAmenity = async (req, res) => {
       return res.status(404).json({ message: "Amenity not found" });
     }
 
-    res.status(200).json(updatedAmenity);
+    res.status(200).json({
+      status: true,
+      data: updatedAmenity,
+      message: "Amenity Updated successfully.",
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -92,7 +108,11 @@ export const deleteAmenity = async (req, res) => {
     if (!deletedAmenity) {
       return res.status(404).json({ message: "Amenity not found" });
     }
-    res.status(200).json({ message: "Amenity deleted successfully" });
+    res.status(200).json({
+      status: true,
+      data: [],
+      message: "Amenity deleted successfully.",
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

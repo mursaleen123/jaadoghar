@@ -1,18 +1,5 @@
 import express from 'express';
 
-import {
-  createAmenity,
-  getAmenities,
-  getAmenityById,
-  updateAmenity,
-  deleteAmenity
-} from '../controller/amenityController.js'; 
-
-import {
-  checkAdminAuthMiddleware,
-  checkAuthMiddleware
-} from '../middlewares.js'; // Ensure the correct path and file extension
-import { upload } from '../helpers/uploadFile.js';
 import { addPricingModel, deletePricingModelById, getPricingModelById, getPricingModels, updatePricingModel } from '../controller/PricingModelController.js';
 
 const app = express();

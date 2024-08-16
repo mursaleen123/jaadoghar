@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import { fileURLToPath } from "url";
 import PropertyDetails from "../models/property.js";
 import pricingModel from "../models/pricing.js";
-import { log } from "console";
+import PropertyRooms from "../models/propertyRooms.js";
 const __filename = fileURLToPath(import.meta.url);
 
 export const propertyCreate = async (req, res) => {
@@ -30,29 +30,36 @@ export const propertyCreate = async (req, res) => {
       host,
       seo,
       additionalHost,
+      fee,
       user_id,
       pricingModelName,
       adultPersons,
+      destinations,
     } = req.body;
+
     let { GST } = req.body;
     const personsCount = adultPersons >= 3 ? 3 : adultPersons;
+    let finalPrice = price;
+    let PricingModels;
+
     if (pricingModelName) {
-      const PricingModels = await pricingModel.findOne({
+      PricingModels = await pricingModel.findOne({
         ModelName: pricingModelName,
         Persons: personsCount,
       });
 
-      let cfAmount, gstAmount, finalPrice;
-      if (PricingModels.key === "Model1") {
+      let gstAmount, cfAmount;
+
+      if (PricingModels) {
         GST = PricingModels.GST;
         gstAmount = price * GST ?? 1;
-        cfAmount = price * PricingModels.CF;
-        finalPrice = price + gstAmount + cfAmount;
-      } else if (PricingModels.key === "Model2") {
-        GST = PricingModels.GST;
-        gstAmount = price * GST ?? 1;
-        // cfAmount = price * PricingModels.CF;
-        finalPrice = price + gstAmount;
+
+        if (PricingModels.key === "Model1") {
+          cfAmount = price * PricingModels.CF;
+          finalPrice = price + gstAmount + cfAmount;
+        } else if (PricingModels.key === "Model2") {
+          finalPrice = price + gstAmount;
+        }
       }
     }
 
@@ -62,11 +69,13 @@ export const propertyCreate = async (req, res) => {
       GST,
       location,
       description,
+      destinations,
       mealsDescription,
       HouseRulesThingstoNote,
       LocationKnowHow,
       price,
-      finalPrice,
+      fee,
+      finalPrice, // Use finalPrice here
       capacity,
       amenities,
       collections,
@@ -82,23 +91,67 @@ export const propertyCreate = async (req, res) => {
       seo,
       additionalHost,
       user_id,
-      pricingModel_id: PricingModels._id,
+      pricingModel_id: PricingModels?._id,
     });
 
     const property = await newProperty.save();
+    const propertyId = property._id;
 
+    // const roomsWithPropertyId = rooms.map((room) => ({
+    //   ...room,
+    //   propertyId,
+    // }));
+
+    // await Promise.all(
+    //   roomsWithPropertyId.map((room) => addRoomToProperty(room))
+    // );
     res.status(200).json({
-      data: { property },
-      success: true,
-      message: "Property Added Successfully",
-      code: "propertyCreateAPI",
+      status: true,
+      data: property,
+      message: "Property Added successfully.",
     });
   } catch (error) {
     return res.status(500).json({
       success: false,
-      error: error.message,
       message: error.message,
     });
+  }
+};
+
+export const addRoomToProperty = async (room) => {
+  try {
+    const {
+      propertyId,
+      name,
+      capacity,
+      beds,
+      similarRooms,
+      size,
+      enquiry,
+      quickBook,
+      amenities,
+    } = room;
+
+    if (!propertyId || !name || !capacity || !beds || !size || !amenities) {
+      throw new Error("Missing required room details.");
+    }
+
+    const newRoom = new PropertyRooms({
+      propertyId,
+      name,
+      capacity,
+      beds,
+      similarRooms,
+      size,
+      enquiry,
+      quickBook,
+      amenities,
+    });
+
+    await newRoom.save();
+  } catch (error) {
+    console.error("Error in addRoomToProperty:", error); // Log the error for debugging
+    throw error; // Re-throw the error to be handled in the propertyCreate function
   }
 };
 
@@ -110,22 +163,21 @@ export const getProperties = async (req, res) => {
       query = { user_id: req.user._id }; // Only get properties associated with the vendor
     }
 
-    // Fetch properties based on the query
     const properties = await PropertyDetails.find(query)
       .populate("amenities")
       .populate("filters")
       .populate("collections")
+      .populate("destinations")
       .populate("experiences");
 
     res.status(200).json({
-      data: { properties },
-      success: true,
-      message: "Properties Retrieved Successfully",
+      status: true,
+      data: properties,
+      message: "Properties Properties successfully.",
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message,
       message: error.message,
     });
   }
@@ -174,14 +226,14 @@ export const searchProperties = async (req, res) => {
       ]);
     }
     res.status(200).json({
-      data: { properties },
-      success: true,
-      message: "Searched Property",
+      status: true,
+      data: properties,
+      message: " Searched Property.",
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message,
+
       message: error.message,
     });
   }
@@ -193,6 +245,7 @@ export const getPropertyById = async (req, res) => {
     const property = await PropertyDetails.findById(id)
       .populate("amenities")
       .populate("filters")
+      .populate("destinations")
       .populate("collections")
       .populate("experiences");
 
@@ -204,14 +257,13 @@ export const getPropertyById = async (req, res) => {
     }
 
     res.status(200).json({
-      data: { property },
-      success: true,
-      message: "Property Retrieved Successfully",
+      status: true,
+      data: property,
+      message: "Property Retrieved Successfull",
     });
   } catch (error) {
     return res.status(500).json({
       success: false,
-      error: error.message,
       message: error.message,
     });
   }
@@ -234,14 +286,13 @@ export const updateProperty = async (req, res) => {
     }
 
     res.status(200).json({
-      data: { property },
-      success: true,
-      message: "Property Updated Successfully",
+      status: true,
+      data: property,
+      message: "Property Updated Successfull",
     });
   } catch (error) {
     return res.status(500).json({
       success: false,
-      error: error.message,
       message: error.message,
     });
   }
@@ -260,13 +311,13 @@ export const deleteProperty = async (req, res) => {
     }
 
     res.status(200).json({
-      success: true,
-      message: "Property Deleted Successfully",
+      status: true,
+      data: [],
+      message: "Property Deleted Successfull",
     });
   } catch (error) {
     return res.status(500).json({
       success: false,
-      error: error.message,
       message: error.message,
     });
   }

@@ -29,6 +29,11 @@ export const addPricingModel = async (req, res) => {
     await newPricingModel.save();
 
     res.status(201).json(newPricingModel);
+    res.status(200).json({
+      status: true,
+      data: newPricingModel,
+      message: "Pricing Model Created successfully.",
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -38,7 +43,11 @@ export const addPricingModel = async (req, res) => {
 export const getPricingModels = async (req, res) => {
   try {
     const pricingModels = await pricingModel.find();
-    res.status(200).json(pricingModels);
+    res.status(200).json({
+      status: true,
+      data: pricingModels,
+      message: "Pricing Model Fetched successfully.",
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -51,7 +60,11 @@ export const getPricingModelById = async (req, res) => {
     if (!pricingModels) {
       return res.status(404).json({ message: "Pricing Model not found" });
     }
-    res.status(200).json(pricingModels);
+    res.status(200).json({
+      status: true,
+      data: pricingModels,
+      message: "Pricing Model Fetched successfully.",
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -65,7 +78,7 @@ export const updatePricingModel = async (req, res) => {
     const pricingModels = await pricingModel.findById(req.params.id);
     if (!pricingModels)
       return res.status(404).json({ message: "Pricing Model not found" });
-    
+
     let updatedFields = {
       ModelName,
       key,
@@ -86,7 +99,11 @@ export const updatePricingModel = async (req, res) => {
       return res.status(404).json({ message: "Pricing Model not found" });
     }
 
-    res.status(200).json(updatedPricingModel);
+    res.status(200).json({
+      status: true,
+      data: updatedPricingModel,
+      message: "Pricing Model Updated successfully.",
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -99,7 +116,11 @@ export const deletePricingModelById = async (req, res) => {
     if (!deletedModel) {
       return res.status(404).json({ message: "Pricing Model not found" });
     }
-    res.status(200).json({ message: "Pricing Model deleted successfully" });
+    res.status(200).json({
+      status: true,
+      data: [],
+      message: "Pricing Model deleted successfully.",
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

@@ -5,7 +5,7 @@ import {
   checkAuthMiddleware,
 } from "../middlewares.js"; // Ensure the correct path and file extension
 import { upload } from "../helpers/uploadFile.js";
-import { createAboutUs, createHomePage, getAboutUs, getHomePage } from "../controller/sectionController.js";
+import { createAboutUs, createHomePage, createPrivacyPolicyPage, createRefundPolicyPage, createTermsPolicyPage, getAboutUs, getHomePage, getPrivacyPolicyPage, getRefundPolicyPage, getTermsPolicyPage } from "../controller/sectionController.js";
 import {
   getAmenities,
   updateAmenity,
@@ -45,6 +45,10 @@ app.get(
 //------------------------- HOME PAGE ------------------------- //
 const uploadHomePageImages = upload.fields([
   { name: "HeroSectionImage", maxCount: 1 }, 
+  { name: "FeatureSectionImage", maxCount: 1 }, 
+  { name: "knowMoreSectionImage", maxCount: 1 }, 
+  { name: "hostSectionImage", maxCount: 1 }, 
+  { name: "aboutUsSectionImage", maxCount: 1 }, 
 ]);
 app.post(
   "/createHomePage",
@@ -61,4 +65,56 @@ app.get(
 
 //------------------------- HOME PAGE ------------------------- //
 
+
+
+//------------------------- Privacy Policy Page ------------------------- //
+
+app.post(
+  "/createPrivacyPolicyPage",
+  // checkAdminAuthMiddleware,
+  upload.none('image'),  
+  createPrivacyPolicyPage
+);
+
+// Get  aboutus
+app.get(
+  "/getPrivacyPolicyPage",
+  // checkAuthMiddleware,
+  getPrivacyPolicyPage
+);
+//------------------------- Privacy Policy Page ------------------------- //
+
+//------------------------- Refund Policy Page ------------------------- //
+
+app.post(
+  "/createRefundPolicyPage",
+  // checkAdminAuthMiddleware,
+  upload.none('image'),  
+  createRefundPolicyPage
+);
+
+// Get  aboutus
+app.get(
+  "/getRefundPolicyPage",
+  // checkAuthMiddleware,
+  getRefundPolicyPage
+);
+//------------------------- Refund Policy Page ------------------------- //
+
+//------------------------- Terms Policy Page ------------------------- //
+
+app.post(
+  "/createTermsPolicyPage",
+  // checkAdminAuthMiddleware,
+  upload.none('image'),  
+  createTermsPolicyPage
+);
+
+// Get  aboutus
+app.get(
+  "/getTermsPolicyPage",
+  // checkAuthMiddleware,
+  getTermsPolicyPage
+);
+//------------------------- Terms Policy Page ------------------------- //
 export default app;

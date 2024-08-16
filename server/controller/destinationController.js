@@ -1,9 +1,9 @@
 import path from "path";
 import fs from "fs";
-import Collection from "../models/collection.js";
+import Destination from "../models/destinations.js";
 
-// Create a new Collection
-export const createCollection = async (req, res) => {
+// Create a new Destination
+export const createDestination = async (req, res) => {
   try {
     const { name, description, folder } = req.body;
     const imageUrl = req.file
@@ -16,44 +16,44 @@ export const createCollection = async (req, res) => {
       fs.mkdirSync(uploadPath, { recursive: true });
     }
 
-    const newCollection = new Collection({ name, imageUrl, description });
-    await newCollection.save();
+    const newDestination = new Destination({ name, imageUrl, description });
+    await newDestination.save();
 
     res.status(200).json({
       status: true,
-      data: newCollection,
-      message: "Collection Created successfully.",
+      data: newDestination,
+      message: "Destination Created successfully.",
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// Get all Collections
-export const getCollections = async (req, res) => {
+// Get all Destinations
+export const getDestinations = async (req, res) => {
   try {
-    const collections = await Collection.find();
+    const Destinations = await Destination.find();
     res.status(200).json({
       status: true,
-      data: collections,
-      message: "Collections Fetched successfully.",
+      data: Destinations,
+      message: "Destinations Fetched successfully.",
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// Get an Collection by ID
-export const getCollectionById = async (req, res) => {
+// Get an Destination by ID
+export const getDestinationById = async (req, res) => {
   try {
-    const collection = await Collection.findById(req.params.id);
-    if (!collection) {
-      return res.status(404).json({ message: "Collection not found" });
+    const Destinations = await Destination.findById(req.params.id);
+    if (!Destinations) {
+      return res.status(404).json({ message: "Destination not found" });
     }
     res.status(200).json({
       status: true,
-      data: collection,
-      message: "Collection Fetched successfully.",
+      data: Destinations,
+      message: "Destination Fetched successfully.",
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -61,7 +61,7 @@ export const getCollectionById = async (req, res) => {
 };
 
 // Update an colletion by ID
-export const updateCollection = async (req, res) => {
+export const updateDestination = async (req, res) => {
   try {
     const { name,  description, folder } = req.body;
     let updatedFields = { name,  description };
@@ -78,37 +78,37 @@ export const updateCollection = async (req, res) => {
 
     }
 
-    const updatedCollection = await Collection.findByIdAndUpdate(
+    const updatedDestination = await Destination.findByIdAndUpdate(
       req.params.id,
       updatedFields,
       { new: true }
     );
 
-    if (!updatedCollection) {
-      return res.status(404).json({ message: "Collection not found" });
+    if (!updatedDestination) {
+      return res.status(404).json({ message: "Destination not found" });
     }
 
     res.status(200).json({
       status: true,
-      data: updatedCollection,
-      message: "Collection Updated successfully.",
+      data: updatedDestination,
+      message: "Destination Updated successfully.",
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// Delete an Collection by ID
-export const deleteCollection = async (req, res) => {
+// Delete an Destination by ID
+export const deleteDestination = async (req, res) => {
   try {
-    const deletedCollection = await Collection.findByIdAndDelete(req.params.id);
-    if (!deletedCollection) {
-      return res.status(404).json({ message: "Collection not found" });
+    const deletedDestination = await Destination.findByIdAndDelete(req.params.id);
+    if (!deletedDestination) {
+      return res.status(404).json({ message: "Destination not found" });
     }
     res.status(200).json({
       status: true,
       data: [],
-      message: "Collection deleted successfully.",
+      message: "Destination deleted successfully.",
     });
   } catch (error) {
     res.status(500).json({ message: error.message });

@@ -19,6 +19,13 @@ const mealSchema = new mongoose.Schema({
   for: { type: String, required: false },
 });
 
+const feeSchema = new mongoose.Schema({
+  name: { type: String, required: false },
+  price: { type: String, required: false },
+  type: { type: String, required: false },
+  description: { type: String, required: false },
+});
+
 const taxesAndCancellationsSchema = new mongoose.Schema({
   type: { type: String, required: false },
   feeType: { type: String, required: false },
@@ -87,6 +94,13 @@ const propertySchema = new mongoose.Schema(
         required: false,
       },
     ],
+    destinations: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Destinations",
+        required: false,
+      },
+    ],
     experiences: [
       {
         type: mongoose.Schema.Types.ObjectId,
@@ -95,6 +109,7 @@ const propertySchema = new mongoose.Schema(
       },
     ],
     meals: [mealSchema],
+    fee: [feeSchema],
     status: { type: String, required: false },
     taxesAndCancellations: {
       type: taxesAndCancellationsSchema,
