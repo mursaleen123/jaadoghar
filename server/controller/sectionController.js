@@ -19,34 +19,31 @@ export const createAboutUs = async (req, res) => {
       }
     }
 
-    // Check if an About Us section already exists
     let section = await Sections.findOne();
 
     if (!section) {
-      // Create a new section if it doesn't exist
       section = new Sections();
     }
-
-    // Update the first section
-    if (aboutUs.firstSection) {
+    if (!section.aboutUs) {
+      section.aboutUs = {};
+    }
+    if (aboutUs && aboutUs.firstSection) {
       section.aboutUs.firstSection = {
-        ...section.aboutUs.firstSection,
-        ...aboutUs.firstSection,
+        title: aboutUs.firstSection.title,
+        description: aboutUs.firstSection.description,
         imageUrl: imageUrls.sectionOneImage
           ? imageUrls.sectionOneImage[0]
           : section.aboutUs.firstSection?.imageUrl,
       };
     }
 
-    // Update the second section and its cards
     if (aboutUs.secondSection) {
       section.aboutUs.secondSection = {
-        ...section.aboutUs.secondSection,
         ...aboutUs.secondSection,
-        cards: section.aboutUs.secondSection.cards.map((card, index) => {
+        cards: aboutUs.secondSection.cards.map((card, index) => {
           const imageFieldName = `card${index + 1}Image`;
           return {
-            ...card,
+            ...card,  
             ...aboutUs.secondSection.cards[index],
             imageUrl: imageUrls[imageFieldName]
               ? imageUrls[imageFieldName][0]
@@ -56,10 +53,8 @@ export const createAboutUs = async (req, res) => {
       };
     }
 
-    // Update the third section
     if (aboutUs.thirdSection) {
       section.aboutUs.thirdSection = {
-        ...section.aboutUs.thirdSection,
         ...aboutUs.thirdSection,
         imageUrl: imageUrls.sectionThirdImage
           ? imageUrls.sectionThirdImage[0]
@@ -67,17 +62,16 @@ export const createAboutUs = async (req, res) => {
       };
     }
 
-    // Save the updated or newly created section
     await section.save();
 
-    res.status(200).json({"data":section.aboutUs,"message":"Created Successfully"});
+    res
+      .status(200)
+      .json({ data: section.aboutUs, message: "Created Successfully" });
   } catch (error) {
     console.error("Error creating/updating About Us section:", error);
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
-
-
 
 // Get about us page
 export const getAboutUs = async (req, res) => {
@@ -212,7 +206,9 @@ export const createHomePage = async (req, res) => {
       await section.save();
     }
 
-    res.status(200).json({"data":section.HomePage,"message":"Created Successfully"});
+    res
+      .status(200)
+      .json({ data: section.HomePage, message: "Created Successfully" });
   } catch (error) {
     console.error("Error creating/updating HomePage section:", error);
     res.status(500).json({ message: "Internal Server Error" });
@@ -226,7 +222,7 @@ export const getHomePage = async (req, res) => {
       .populate("HomePage.collectionSection")
       .populate("HomePage.experiencesSection")
       .populate("HomePage.destinationSection");
-    
+
     if (section && section.HomePage) {
       res.status(200).json(section.HomePage);
     } else {
@@ -252,7 +248,10 @@ export const createPrivacyPolicyPage = async (req, res) => {
       await section.save();
     }
 
-    res.status(200).json({"data":section.PrivacyPolicyPage,"message":"Created Successfully"});
+    res.status(200).json({
+      data: section.PrivacyPolicyPage,
+      message: "Created Successfully",
+    });
   } catch (error) {
     console.error(
       "Error creating/updating createPrivacyPolicyPage section:",
@@ -293,7 +292,10 @@ export const createRefundPolicyPage = async (req, res) => {
       await section.save();
     }
 
-    res.status(200).json({"data":section.RefundPolicyPage,"message":"Created Successfully"});
+    res.status(200).json({
+      data: section.RefundPolicyPage,
+      message: "Created Successfully",
+    });
   } catch (error) {
     console.error(
       "Error creating/updating createRefundPolicyPage section:",
@@ -333,7 +335,9 @@ export const createTermsPolicyPage = async (req, res) => {
       await section.save();
     }
 
-    res.status(200).json({"data":section.TermsPolicyPage,"message":"Created Successfully"});
+    res
+      .status(200)
+      .json({ data: section.TermsPolicyPage, message: "Created Successfully" });
   } catch (error) {
     console.error("Error creating/updating TermsPolicyPage section:", error);
     res.status(500).json({ message: "Internal Server Error" });
