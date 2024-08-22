@@ -160,7 +160,7 @@ export const getProperties = async (req, res) => {
     let query = {};
 
     if (req.user.role === "vendor") {
-      query = { user_id: req.user._id }; // Only get properties associated with the vendor
+      query = { user_id: req.user._id }; 
     }
 
     const properties = await PropertyDetails.find(query)
@@ -173,7 +173,7 @@ export const getProperties = async (req, res) => {
     res.status(200).json({
       status: true,
       data: properties,
-      message: "Properties Properties successfully.",
+      message: "Properties Fetched successfully.",
     });
   } catch (error) {
     res.status(500).json({
