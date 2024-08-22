@@ -1,7 +1,4 @@
-import path from "path";
-import fs from "fs";
-
-import Booking from '../models/bookingModel.js'; // Ensure correct path to your Booking model
+import Booking from "../models/booking.js";
 
 // Create a new booking
 export const createBooking = async (req, res) => {
