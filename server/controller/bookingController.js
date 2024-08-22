@@ -18,11 +18,7 @@ export const createBooking = async (req, res) => {
       payment,
     } = req.body;
 
-    // Validate required fields
-    if (!propertyId || !firstName || !lastName || !phone || !email || !checkIn || !checkOut || !bill || !persons || !childrens || !payment) {
-      return res.status(400).json({ message: "All required fields must be provided." });
-    }
-
+   
     // Create a new booking instance
     const newBooking = new Booking({
       propertyId,
@@ -39,10 +35,8 @@ export const createBooking = async (req, res) => {
       payment,
     });
 
-    // Save the booking to the database
     await newBooking.save();
 
-    // Send a success response
     res.status(201).json({
       status: true,
       data: newBooking,
@@ -53,89 +47,100 @@ export const createBooking = async (req, res) => {
   }
 };
 
+// Get all Bookings
+export const getBookings = async (req, res) => {
+  try {
+    const bookings = await Booking.find();
+    res.status(200).json({
+      status: true,
+      data: bookings,
+      message: "Bookings fetched successfully.",
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
-// // Get all Destinations
-// export const getDestinations = async (req, res) => {
-//   try {
-//     const Destinations = await Destination.find();
-//     res.status(200).json({
-//       status: true,
-//       data: Destinations,
-//       message: "Destinations Fetched successfully.",
-//     });
-//   } catch (error) {
-//     res.status(500).json({ message: error.message });
-//   }
-// };
+// Get a Booking by ID
+export const getBookingById = async (req, res) => {
+  try {
+    const booking = await Booking.findById(req.params.id);
+    if (!booking) {
+      return res.status(404).json({ message: "Booking not found" });
+    }
+    res.status(200).json({
+      status: true,
+      data: booking,
+      message: "Booking fetched successfully.",
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
-// // Get an Destination by ID
-// export const getDestinationById = async (req, res) => {
-//   try {
-//     const Destinations = await Destination.findById(req.params.id);
-//     if (!Destinations) {
-//       return res.status(404).json({ message: "Destination not found" });
-//     }
-//     res.status(200).json({
-//       status: true,
-//       data: Destinations,
-//       message: "Destination Fetched successfully.",
-//     });
-//   } catch (error) {
-//     res.status(500).json({ message: error.message });
-//   }
-// };
+// Update a Booking by ID
+export const updateBooking = async (req, res) => {
+  try {
+    const {
+      firstName,
+      lastName,
+      phone,
+      email,
+      checkIn,
+      checkOut,
+      bill,
+      specialRequest,
+      persons,
+      childrens,
+      payment,
+    } = req.body;
+    let updatedFields = {
+      firstName,
+      lastName,
+      phone,
+      email,
+      checkIn,
+      checkOut,
+      bill,
+      specialRequest,
+      persons,
+      childrens,
+      payment,
+    };
 
-// // Update an colletion by ID
-// export const updateDestination = async (req, res) => {
-//   try {
-//     const { name,  description, folder } = req.body;
-//     let updatedFields = { name,  description };
+    const updatedBooking = await Booking.findByIdAndUpdate(
+      req.params.id,
+      updatedFields,
+      { new: true }
+    );
 
-//     if (req.file) {
-//       const uploadPath = path.join("public/images", folder.toLowerCase());
+    if (!updatedBooking) {
+      return res.status(404).json({ message: "Booking not found" });
+    }
 
-//       if (!fs.existsSync(uploadPath)) {
-//         fs.mkdirSync(uploadPath, { recursive: true });
-//       }
+    res.status(200).json({
+      status: true,
+      data: updatedBooking,
+      message: "Booking updated successfully.",
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
-//       const imageUrl = `/images/${folder}/${req.file.filename}`;
-//       updatedFields.imageUrl = imageUrl;
-
-//     }
-
-//     const updatedDestination = await Destination.findByIdAndUpdate(
-//       req.params.id,
-//       updatedFields,
-//       { new: true }
-//     );
-
-//     if (!updatedDestination) {
-//       return res.status(404).json({ message: "Destination not found" });
-//     }
-
-//     res.status(200).json({
-//       status: true,
-//       data: updatedDestination,
-//       message: "Destination Updated successfully.",
-//     });
-//   } catch (error) {
-//     res.status(500).json({ message: error.message });
-//   }
-// };
-
-// // Delete an Destination by ID
-// export const deleteDestination = async (req, res) => {
-//   try {
-//     const deletedDestination = await Destination.findByIdAndDelete(req.params.id);
-//     if (!deletedDestination) {
-//       return res.status(404).json({ message: "Destination not found" });
-//     }
-//     res.status(200).json({
-//       status: true,
-//       data: [],
-//       message: "Destination deleted successfully.",
-//     });
-//   } catch (error) {
-//     res.status(500).json({ message: error.message });
-//   }
-// };
+// Delete a Booking by ID
+export const deleteBooking = async (req, res) => {
+  try {
+    const deletedBooking = await Booking.findByIdAndDelete(req.params.id);
+    if (!deletedBooking) {
+      return res.status(404).json({ message: "Booking not found" });
+    }
+    res.status(200).json({
+      status: true,
+      data: [],
+      message: "Booking deleted successfully.",
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
