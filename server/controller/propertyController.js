@@ -45,22 +45,22 @@ export const propertyCreate = async (req, res) => {
     if (pricingModelName) {
       PricingModels = await pricingModel.findOne({
         ModelName: pricingModelName,
-        Persons: personsCount,
+        Persons: 1,
       });
 
       let gstAmount, cfAmount;
 
-      if (PricingModels) {
-        GST = PricingModels.GST;
-        gstAmount = price * GST ?? 1;
+      // if (PricingModels) {
+      //   GST = PricingModels.GST;
+      //   gstAmount = price * GST ?? 1;
 
-        if (PricingModels.key === "Model1") {
-          cfAmount = price * PricingModels.CF;
-          finalPrice = price + gstAmount + cfAmount;
-        } else if (PricingModels.key === "Model2") {
-          finalPrice = price + gstAmount;
-        }
-      }
+      //   if (PricingModels.key === "Model1") {
+      //     cfAmount = price * PricingModels.CF;
+      //     finalPrice = price + gstAmount + cfAmount;
+      //   } else if (PricingModels.key === "Model2") {
+      //     finalPrice = price + gstAmount;
+      //   }
+      // }
     }
 
     const newProperty = new PropertyDetails({

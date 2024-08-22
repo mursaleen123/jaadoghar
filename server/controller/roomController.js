@@ -18,6 +18,7 @@ export const addRoomToProperty = async (req, res) => {
       description,
       folder,
       price,
+      RoomConvenienceFee,
       amenities,
     } = req.body;
     let images;
@@ -27,6 +28,13 @@ export const addRoomToProperty = async (req, res) => {
         imageUrl: `/images/${folderPath}/${file.filename}`,
       }));
     }
+    const initialPrice = Number(price);
+    let calculatedPrice =
+      initialPrice + initialPrice * (Number(RoomConvenienceFee) / 100);
+
+
+    const property = await PropertyDetails.findById(propertyId).populate("pricingModel_id")
+    calculatedPrice = calculatedPrice + initialPrice * (Number(property.pricingModel_id.GST) / 100);
 
     const newRoom = new PropertyRooms({
       propertyId,
@@ -39,7 +47,8 @@ export const addRoomToProperty = async (req, res) => {
       quickBook,
       description,
       images,
-      price,
+      price: calculatedPrice,
+      initialPrice,
       amenities,
     });
 
