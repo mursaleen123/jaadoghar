@@ -28,13 +28,27 @@ export const addRoomToProperty = async (req, res) => {
         imageUrl: `/images/${folderPath}/${file.filename}`,
       }));
     }
+
+    const property = await PropertyDetails.findById(propertyId).populate(
+      "pricingModel_id"
+    );
     const initialPrice = Number(price);
-    let calculatedPrice =
-      initialPrice + initialPrice * (Number(RoomConvenienceFee) / 100);
+    let calculatedPrice = Number(price);
+    if (property.pricingModel_id.key === "Model1") {
+      calculatedPrice =
+        initialPrice + initialPrice * (Number(RoomConvenienceFee) / 100);
 
-
-    const property = await PropertyDetails.findById(propertyId).populate("pricingModel_id")
-    calculatedPrice = calculatedPrice + initialPrice * (Number(property.pricingModel_id.GST) / 100);
+      calculatedPrice =
+        calculatedPrice +
+        initialPrice * (Number(property.pricingModel_id.GST) / 100);
+    } else if (property.pricingModel_id.key === "Model2") {
+      calculatedPrice =
+        calculatedPrice +
+        initialPrice * (Number(property.pricingModel_id.GST ?? 12) / 100);
+    } else if (property.pricingModel_id.key === "Model3") {
+      calculatedPrice =
+        calculatedPrice + initialPrice * (Number(property.GST ?? 12) / 100);
+    }
 
     const newRoom = new PropertyRooms({
       propertyId,
