@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import { fileURLToPath } from "url";
 import PropertyDetails from "../models/property.js";
 import PropertyRooms from "../models/propertyRooms.js";
+import GeneralSettings from "../models/settings.js";
 const __filename = fileURLToPath(import.meta.url);
 
 export const addRoomToProperty = async (req, res) => {
@@ -34,7 +35,18 @@ export const addRoomToProperty = async (req, res) => {
     );
     const initialPrice = Number(price);
     let calculatedPrice = Number(price);
-    const gstRate = initialPrice <= 7500 ? 12 : 18;
+
+    let gstConfig = await GeneralSettings.findOne();
+
+    if (!gstConfig) {
+      gstConfig = new GeneralSettings({ threshold: 7500 });
+    }
+
+    if (!gstConfig.threshold) {
+      gstConfig.threshold = 7500;
+    }
+
+    const gstRate = initialPrice <= gstConfig.threshold ? 12 : 18;
 
     if (property.pricingModel_id.key === "Model1") {
       calculatedPrice =
