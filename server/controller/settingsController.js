@@ -19,7 +19,7 @@ export const createOrUpdateSettings = async (req, res) => {
     res.status(200).json({
       status: true,
       data: settings,
-      message: 'Settings updated successfully.',
+      message: "Settings updated successfully.",
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -33,7 +33,7 @@ export const getSettings = async (req, res) => {
     if (!settings) {
       return res.status(404).json({
         status: false,
-        message: 'No GST settings found.',
+        message: "No GST settings found.",
       });
     }
 
@@ -49,11 +49,12 @@ export const getSettings = async (req, res) => {
 // Delete GST Settings
 export const deleteSettings = async (req, res) => {
   try {
-    await  GeneralSettings.deleteOne();
+    await GeneralSettings.deleteOne();
 
     res.status(200).json({
       status: true,
-      message: 'GST Settings deleted successfully.',
+      data: [],
+      message: "GST Settings deleted successfully.",
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
