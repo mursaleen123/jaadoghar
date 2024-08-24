@@ -28,7 +28,7 @@ export const addPricingModel = async (req, res) => {
     });
     await newPricingModel.save();
 
-    res.status(201).json(newPricingModel);
+    res.status(200).json(newPricingModel);
     res.status(200).json({
       status: true,
       data: newPricingModel,

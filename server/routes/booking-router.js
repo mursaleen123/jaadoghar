@@ -1,5 +1,6 @@
 import express from 'express';
 import {
+  calculateCosting,
   createBooking,
 } from '../controller/bookingController.js'; 
 import { getBookings } from '../controller/bookingController.js';
@@ -17,6 +18,14 @@ app.post(
   // checkAuthMiddleware,  
   createBooking
 );
+
+//Live booking and costing
+app.post(
+  '/calculateCosting',
+  // checkAuthMiddleware,  
+  calculateCosting
+);
+
 
 // Get all bookings
 app.get(

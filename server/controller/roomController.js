@@ -34,20 +34,20 @@ export const addRoomToProperty = async (req, res) => {
     );
     const initialPrice = Number(price);
     let calculatedPrice = Number(price);
+    const gstRate = initialPrice <= 7500 ? 12 : 18;
+
     if (property.pricingModel_id.key === "Model1") {
       calculatedPrice =
         initialPrice + initialPrice * (Number(RoomConvenienceFee) / 100);
 
       calculatedPrice =
-        calculatedPrice +
-        initialPrice * (Number(property.pricingModel_id.GST) / 100);
+        calculatedPrice + initialPrice * (Number(gstRate) / 100);
     } else if (property.pricingModel_id.key === "Model2") {
       calculatedPrice =
-        calculatedPrice +
-        initialPrice * (Number(property.pricingModel_id.GST ?? 12) / 100);
+        calculatedPrice + initialPrice * (Number(gstRate) / 100);
     } else if (property.pricingModel_id.key === "Model3") {
       calculatedPrice =
-        calculatedPrice + initialPrice * (Number(property.GST ?? 12) / 100);
+        calculatedPrice + initialPrice * (Number(gstRate) / 100);
     }
 
     const newRoom = new PropertyRooms({

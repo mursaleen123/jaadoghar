@@ -1,10 +1,23 @@
 import mongoose from "mongoose";
 
+const roomSchema = new mongoose.Schema({
+  roomId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "PropertyRooms",
+    required: true,
+  },
+  roomName: { type: String, required: true },
+  roomCapacity: { type: Number, required: true },
+  roomPrice: { type: Number, required: true },
+  totalRoomPrice: { type: Number, required: true },
+  guestsInRoom: { type: Number, required: true },
+});
+
 const bookingSchema = new mongoose.Schema(
   {
     propertyId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Property", 
+      ref: "Property",
       required: true,
     },
     firstName: { type: String, required: true },
@@ -19,15 +32,11 @@ const bookingSchema = new mongoose.Schema(
     childrens: { type: Number, required: true },
     payment: {
       type: String,
-      enum: ["Pending", "Paid", "Cancelled"], 
+      enum: ["Pending", "Paid", "Cancelled"],
       default: "Pending",
       required: true,
     },
-    // paymentId: {
-    //   type: mongoose.Schema.Types.ObjectId,
-    //   ref: "Payment",
-    //   default: null,
-    // },
+    rooms: [roomSchema],
   },
   { timestamps: true }
 );
