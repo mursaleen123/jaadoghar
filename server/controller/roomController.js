@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import { fileURLToPath } from "url";
 import PropertyDetails from "../models/property.js";
 import PropertyRooms from "../models/propertyRooms.js";
+import GeneralSettings from "../models/settings.js";
 const __filename = fileURLToPath(import.meta.url);
 
 export const addRoomToProperty = async (req, res) => {
@@ -18,6 +19,7 @@ export const addRoomToProperty = async (req, res) => {
       description,
       folder,
       price,
+      RoomConvenienceFee,
       amenities,
     } = req.body;
     let images;
@@ -26,6 +28,38 @@ export const addRoomToProperty = async (req, res) => {
       images = req.files["image"].map((file) => ({
         imageUrl: `/images/${folderPath}/${file.filename}`,
       }));
+    }
+
+    const property = await PropertyDetails.findById(propertyId).populate(
+      "pricingModel_id"
+    );
+    const initialPrice = Number(price);
+    let calculatedPrice = Number(price);
+
+    let gstConfig = await GeneralSettings.findOne();
+
+    if (!gstConfig) {
+      gstConfig = new GeneralSettings({ threshold: 7500 });
+    }
+
+    if (!gstConfig.threshold) {
+      gstConfig.threshold = 7500;
+    }
+
+    const gstRate = initialPrice <= gstConfig.threshold ? 12 : 18;
+
+    if (property.pricingModel_id.key === "Model1") {
+      calculatedPrice =
+        initialPrice + initialPrice * (Number(RoomConvenienceFee) / 100);
+
+      calculatedPrice =
+        calculatedPrice + initialPrice * (Number(gstRate) / 100);
+    } else if (property.pricingModel_id.key === "Model2") {
+      calculatedPrice =
+        calculatedPrice + initialPrice * (Number(gstRate) / 100);
+    } else if (property.pricingModel_id.key === "Model3") {
+      calculatedPrice =
+        calculatedPrice + initialPrice * (Number(gstRate) / 100);
     }
 
     const newRoom = new PropertyRooms({
@@ -39,7 +73,8 @@ export const addRoomToProperty = async (req, res) => {
       quickBook,
       description,
       images,
-      price,
+      price: calculatedPrice,
+      initialPrice,
       amenities,
     });
 

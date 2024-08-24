@@ -38,29 +38,14 @@ export const propertyCreate = async (req, res) => {
     } = req.body;
 
     let { GST } = req.body;
-    const personsCount = adultPersons >= 3 ? 3 : adultPersons;
     let finalPrice = price;
     let PricingModels;
 
     if (pricingModelName) {
       PricingModels = await pricingModel.findOne({
         ModelName: pricingModelName,
-        Persons: personsCount,
+        Persons: 1,
       });
-
-      let gstAmount, cfAmount;
-
-      if (PricingModels) {
-        GST = PricingModels.GST;
-        gstAmount = price * GST ?? 1;
-
-        if (PricingModels.key === "Model1") {
-          cfAmount = price * PricingModels.CF;
-          finalPrice = price + gstAmount + cfAmount;
-        } else if (PricingModels.key === "Model2") {
-          finalPrice = price + gstAmount;
-        }
-      }
     }
 
     const newProperty = new PropertyDetails({
@@ -75,7 +60,7 @@ export const propertyCreate = async (req, res) => {
       LocationKnowHow,
       price,
       fee,
-      finalPrice, // Use finalPrice here
+      finalPrice,
       capacity,
       amenities,
       collections,
@@ -95,16 +80,7 @@ export const propertyCreate = async (req, res) => {
     });
 
     const property = await newProperty.save();
-    const propertyId = property._id;
 
-    // const roomsWithPropertyId = rooms.map((room) => ({
-    //   ...room,
-    //   propertyId,
-    // }));
-
-    // await Promise.all(
-    //   roomsWithPropertyId.map((room) => addRoomToProperty(room))
-    // );
     res.status(200).json({
       status: true,
       data: property,
