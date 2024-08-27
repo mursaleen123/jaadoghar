@@ -32,7 +32,7 @@ export const propertyCreate = async (req, res) => {
       additionalHost,
       fee,
       user_id,
-      pricingModelName,
+      pricingModelId,
       adultPersons,
       destinations,
     } = req.body;
@@ -40,13 +40,6 @@ export const propertyCreate = async (req, res) => {
     let { GST } = req.body;
     let finalPrice = price;
     let PricingModels;
-
-    if (pricingModelName) {
-      PricingModels = await pricingModel.findOne({
-        ModelName: pricingModelName,
-        Persons: 1,
-      });
-    }
 
     const newProperty = new PropertyDetails({
       dateOfLaunch,
@@ -76,7 +69,7 @@ export const propertyCreate = async (req, res) => {
       seo,
       additionalHost,
       user_id,
-      pricingModel_id: PricingModels?._id,
+      pricingModel_id: pricingModelId,
     });
 
     const property = await newProperty.save();
@@ -136,7 +129,7 @@ export const getProperties = async (req, res) => {
     let query = {};
 
     if (req.user.role === "vendor") {
-      query = { user_id: req.user._id }; 
+      query = { user_id: req.user._id };
     }
 
     const properties = await PropertyDetails.find(query)
