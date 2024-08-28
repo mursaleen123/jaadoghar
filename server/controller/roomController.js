@@ -27,7 +27,7 @@ export const addRoomToProperty = async (req, res) => {
 
     if (req.files["image"]) {
       images = req.files["image"].map((file) => ({
-        imageUrl: `public/images/${folderPath}/${file.filename}`,
+        imageUrl: `/images/${folderPath}/${file.filename}`,
       }));
     }
 
@@ -145,7 +145,7 @@ export const getRoomsByPropertyId = async (req, res) => {
   try {
     const propertyId = req.params.id;
 
-    const room = await PropertyRooms.findOne({ propertyId })
+    const room = await PropertyRooms.find({ propertyId })
       .populate("amenities")
       .exec();
     if (!room) {

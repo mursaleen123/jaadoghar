@@ -41,13 +41,13 @@ export const propertyCreate = async (req, res) => {
     let finalPrice = price;
     let PricingModels;
 
-    if (pricingModelName) {
+    if (pricingModelId) {
       PricingModels = await pricingModel.findOne({
-        ModelName: pricingModelName,
+        _id: pricingModelId,
         Persons: 1,
       });
     }
-    console.log("files:", req?.files, "body:", req.body);
+
     let images = [];
     if (req.files && req.files["images"]) {
       images = req.files["images"].map((file) => ({
@@ -102,7 +102,7 @@ export const propertyCreate = async (req, res) => {
       additionalHost,
       images,
       user_id,
-      pricingModel_id: PricingModels ? PricingModels._id : null,
+      pricingModel_id: pricingModelId,
     });
 
     const property = await newProperty.save();
