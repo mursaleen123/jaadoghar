@@ -10,7 +10,7 @@ const config = {
 
   databaseUrl:env.DATABASE_URL ?? "mongodb+srv://rehmanali65922:jaadooghar65922@localcluster01.41zgdzu.mongodb.net/jaadooghar",
   frontend_url:env.FRONTEND_URL,
-  server_url:env.SERVER_URL,
+  server_url: env.SERVER_URL ?? "http://localhost:9000",
 
 
   email: process.env.USER_EMAIL ?? "762c31001@smtp-brevo.com",

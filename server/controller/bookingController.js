@@ -1,5 +1,14 @@
 import Booking from "../models/booking.js";
 import PropertyRooms from "../models/propertyRooms.js";
+import fs from "fs";
+import path from "path";
+import { createEvent } from "ics";
+import mongoose from "mongoose";
+import { fileURLToPath } from "url";
+import config from '../configs/index.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Create a new booking
 export const createBooking = async (req, res) => {
@@ -19,8 +28,6 @@ export const createBooking = async (req, res) => {
       payment,
       rooms,
     } = req.body;
-
-    // Create a new booking instance
     const newBooking = new Booking({
       propertyId,
       firstName,
@@ -38,7 +45,52 @@ export const createBooking = async (req, res) => {
     });
 
     await newBooking.save();
+    console.log(__dirname);
+    const icalDirectory = path.join(__dirname, "../../public/iCals");
+    if (!fs.existsSync(icalDirectory)) {
+      fs.mkdirSync(icalDirectory, { recursive: true });
+    }
 
+    // Iterate over each room and generate an iCal file
+    for (let i = 0; i < rooms.length; i++) {
+      const room = rooms[i];
+
+      // Define the event details for each room
+      const event = {
+        start: [
+          new Date(checkIn).getUTCFullYear(),
+          new Date(checkIn).getUTCMonth() + 1,
+          new Date(checkIn).getUTCDate(),
+        ],
+        end: [
+          new Date(checkOut).getUTCFullYear(),
+          new Date(checkOut).getUTCMonth() + 1,
+          new Date(checkOut).getUTCDate(),
+        ],
+        title: `Booking for ${firstName} ${lastName} - Room: ${room.roomName}`,
+        description: `Room details:\n- Room Name: ${room.roomName}\n- Guests: ${room.guestsInRoom}\n- Total Price: ${room.totalRoomPrice}\n- Special Request: ${specialRequest}`,
+        location: `Property ID: ${propertyId}`,
+        url: `${config.server_url}/bookings/${newBooking._id}`, // Replace with your server URL
+        status: "CONFIRMED",
+        organizer: { name: firstName + " " + lastName, email: email },
+      };
+
+      createEvent(event, (error, value) => {
+        if (error) {
+          console.log(error);
+          throw new Error("Failed to generate iCal file.");
+        }
+
+        const icalFilename = `booking_${newBooking._id}_room_${room.roomId}.ics`;
+        const icalPath = path.join(icalDirectory, icalFilename);
+
+        fs.writeFileSync(icalPath, value);
+
+        room.iCal = `${config.server_url}/public/iCals/${icalFilename}`; // Replace with your server URL
+      });
+    }
+
+    console.log(rooms);
     res.status(200).json({
       status: true,
       data: newBooking,
@@ -56,7 +108,7 @@ export const getBookings = async (req, res) => {
       path: "rooms.roomId",
       model: "PropertyRooms",
     });
-    
+
     res.status(200).json({
       status: true,
       data: bookings,
