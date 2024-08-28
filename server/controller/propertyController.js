@@ -32,7 +32,7 @@ export const propertyCreate = async (req, res) => {
       additionalHost,
       fee,
       user_id,
-      pricingModelName,
+      pricingModelId,
       adultPersons,
       destinations,
     } = req.body;
@@ -162,6 +162,7 @@ export const getProperties = async (req, res) => {
     let query = {};
 
     if (req.user.role === "vendor") {
+      query = { user_id: req.user._id };
       query = { user_id: req.user._id };
     }
 
