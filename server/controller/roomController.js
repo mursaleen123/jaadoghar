@@ -24,9 +24,10 @@ export const addRoomToProperty = async (req, res) => {
     } = req.body;
     let images;
     const folderPath = folder ? folder.toLowerCase() : "rooms";
+
     if (req.files["image"]) {
       images = req.files["image"].map((file) => ({
-        imageUrl: `/images/${folderPath}/${file.filename}`,
+        imageUrl: `public/images/${folderPath}/${file.filename}`,
       }));
     }
 

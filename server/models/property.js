@@ -11,6 +11,20 @@ const locationSchema = new mongoose.Schema({
   longitude: { type: String, required: false },
 });
 
+const experienceSchema = new mongoose.Schema(
+  {
+    name: { type: String, required: true },
+    price: { type: String, required: true },
+    showInHome: { type: String, default: "hide" },
+    convenienceFee: { type: String, required: true },
+    usage: { type: String, required: true },
+    folder: { type: String, default: "amenities" },
+    description: { type: String, required: true },
+    experienceImages: { type: String, required: true },
+  },
+  { timestamps: true }
+);
+
 const mealSchema = new mongoose.Schema({
   name: { type: String, required: false },
   price: { type: Number, required: false },
@@ -81,11 +95,7 @@ const propertySchema = new mongoose.Schema(
       },
     ],
     filters: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Filters",
-        required: false,
-      },
+      { type: mongoose.Schema.Types.ObjectId, ref: "Filters", required: false },
     ],
     collections: [
       {
@@ -101,13 +111,7 @@ const propertySchema = new mongoose.Schema(
         required: false,
       },
     ],
-    experiences: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Experiences",
-        required: false,
-      },
-    ],
+    experiences: [experienceSchema],
     meals: [mealSchema],
     fee: [feeSchema],
     status: { type: String, required: false },
@@ -131,6 +135,7 @@ const propertySchema = new mongoose.Schema(
       ref: "pricingModel",
       default: null,
     },
+    images: [{ imageUrl: { type: String, required: true } }],
   },
   { timestamps: true }
 );
