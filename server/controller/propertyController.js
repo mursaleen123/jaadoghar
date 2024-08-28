@@ -41,6 +41,38 @@ export const propertyCreate = async (req, res) => {
     let finalPrice = price;
     let PricingModels;
 
+    if (pricingModelId) {
+      PricingModels = await pricingModel.findOne({
+        _id: pricingModelId,
+        Persons: 1,
+      });
+    }
+
+    let images = [];
+    if (req.files && req.files["images"]) {
+      images = req.files["images"].map((file) => ({
+        imageUrl: `/images/${
+          req.body.folder ? req.body.folder.toLowerCase() : "amenities"
+        }/${file.filename}`,
+      }));
+    }
+
+    const updatedExperiences = experiences.map((exp, index) => {
+      let experienceImage = exp.experienceImages;
+
+      if (
+        req.files["experienceImages"] &&
+        req.files["experienceImages"][index]
+      ) {
+        experienceImage = `/images/amenities/${req.files["experienceImages"][index].filename}`;
+      }
+
+      return {
+        ...exp,
+        experienceImages: experienceImage || "",
+      };
+    });
+
     const newProperty = new PropertyDetails({
       dateOfLaunch,
       propertyName,
@@ -57,7 +89,7 @@ export const propertyCreate = async (req, res) => {
       capacity,
       amenities,
       collections,
-      experiences,
+      experiences: updatedExperiences,
       filters,
       meals,
       status,
@@ -68,6 +100,7 @@ export const propertyCreate = async (req, res) => {
       host,
       seo,
       additionalHost,
+      images,
       user_id,
       pricingModel_id: pricingModelId,
     });
@@ -129,6 +162,7 @@ export const getProperties = async (req, res) => {
     let query = {};
 
     if (req.user.role === "vendor") {
+      query = { user_id: req.user._id };
       query = { user_id: req.user._id };
     }
 

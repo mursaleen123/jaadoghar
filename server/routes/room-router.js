@@ -32,8 +32,7 @@ const app = express();
 const uploadRoomImages = upload.fields([{ name: "image", maxCount: 10 }]);
 app.post(
   "/addRoomToProperty",
-  // checkVendorAuthMiddleware,
-  // checkAdminAuthMiddleware,
+
   uploadRoomImages,
   addRoomToProperty
 );
