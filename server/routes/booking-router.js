@@ -2,6 +2,8 @@ import express from 'express';
 import {
   calculateCosting,
   createBooking,
+  searchBookings,
+  updateBookingStatus,
 } from '../controller/bookingController.js'; 
 import { getBookings } from '../controller/bookingController.js';
 import { getBookingById } from '../controller/bookingController.js';
@@ -26,6 +28,12 @@ app.post(
   calculateCosting
 );
 
+//Live booking and costing
+app.post(
+  '/updateBookingStatus/:id',
+  // checkAuthMiddleware,  
+  updateBookingStatus
+);
 
 // Get all bookings
 app.get(
@@ -33,6 +41,14 @@ app.get(
   // checkAdminAuthMiddleware, 
   getBookings
 );
+
+// search bookings
+app.get(
+  '/searchBookings',
+  // checkAdminAuthMiddleware, 
+  searchBookings
+);
+
 
 // Get a specific booking by ID
 app.get(

@@ -1,5 +1,6 @@
 import Booking from "../models/booking.js";
 import PropertyRooms from "../models/propertyRooms.js";
+import mongoose from "mongoose";
 
 // Create a new booking
 export const createBooking = async (req, res) => {
@@ -56,7 +57,7 @@ export const getBookings = async (req, res) => {
       path: "rooms.roomId",
       model: "PropertyRooms",
     });
-    
+
     res.status(200).json({
       status: true,
       data: bookings,
@@ -227,6 +228,98 @@ export const calculateCosting = async (req, res) => {
         selectedRooms,
       },
       message: "Booking Price.",
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// update booking Status
+export const updateBookingStatus = async (req, res) => {
+  try {
+    const booking = await Booking.findById(req.params.id);
+
+    if (!booking) {
+      return res.status(404).json({ message: "Booking not found" });
+    }
+
+    booking.payment = req.body.status || booking.payment;
+    await booking.save();
+
+    res.status(200).json({
+      status: true,
+      data: booking,
+      message: "Booking status updated successfully.",
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Search booking
+export const searchBookings = async (req, res) => {
+  try {
+    const { status, propertyName, name, VendorId } = req.query;
+
+    const filters = { status, propertyName, name, VendorId };
+    const activeFilters = Object.keys(filters).filter((key) => filters[key]);
+
+    if (activeFilters.length > 1) {
+      return res.status(400).json({
+        error:
+          "Please provide only one search parameter: 'status', 'propertyName', or 'name'.",
+      });
+    }
+
+    if (activeFilters.length === 0) {
+      return res.status(400).json({
+        error:
+          "Please provide a search parameter: 'status', 'propertyName', or 'name'.",
+      });
+    }
+
+    let searchCriteria = {};
+    let populateOptions = { path: "propertyId" };
+
+    switch (activeFilters[0]) {
+      case "status":
+        searchCriteria.payment = status;
+        break;
+      case "propertyName":
+        populateOptions.match = { propertyName: new RegExp(propertyName, "i") };
+        break;
+      case "VendorId":
+        populateOptions.match = {
+          user_id: new mongoose.Types.ObjectId(VendorId),
+        };
+        break;
+      case "name":
+        searchCriteria.$or = [
+          { firstName: new RegExp(name, "i") },
+          { lastName: new RegExp(name, "i") },
+        ];
+        break;
+    }
+
+    const bookings = await Booking.find(searchCriteria)
+      .populate(populateOptions)
+      .exec();
+
+    const filteredBookings = bookings.filter((booking) => {
+      if (propertyName || VendorId) {
+        return booking.propertyId !== null;
+      }
+      return true;
+    });
+
+    if (filteredBookings.length === 0) {
+      return res.status(404).json({ message: "Booking not found" });
+    }
+
+    res.status(200).json({
+      status: true,
+      data: filteredBookings,
+      message: "Booking Fetched successfully.",
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
