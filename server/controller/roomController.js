@@ -22,6 +22,7 @@ export const addRoomToProperty = async (req, res) => {
       RoomConvenienceFee,
       amenities,
     } = req.body;
+
     let images;
     const folderPath = folder ? folder.toLowerCase() : "rooms";
 
@@ -34,8 +35,11 @@ export const addRoomToProperty = async (req, res) => {
     const property = await PropertyDetails.findById(propertyId).populate(
       "pricingModel_id"
     );
+
+    console.log("Property Object:", property);
+
     const initialPrice = Number(price);
-    let calculatedPrice = Number(price);
+    let calculatedPrice = initialPrice;
 
     let gstConfig = await GeneralSettings.findOne();
 
@@ -50,20 +54,23 @@ export const addRoomToProperty = async (req, res) => {
     const gstRate = initialPrice <= gstConfig.threshold ? 12 : 18;
 
     if (property.pricingModel_id && property.pricingModel_id.key) {
-      if (property.pricingModel_id.key === "Model1") {
-        calculatedPrice =
-          initialPrice + initialPrice * (Number(RoomConvenienceFee) / 100);
-
-        calculatedPrice =
-          calculatedPrice + initialPrice * (Number(gstRate) / 100);
-      } else if (
-        property.pricingModel_id.key === "Model2" ||
-        property.pricingModel_id.key === "Model3"
-      ) {
-        calculatedPrice =
-          calculatedPrice + initialPrice * (Number(gstRate) / 100);
+      const key = property.pricingModel_id.key;
+      switch (key) {
+        case "Model1":
+          calculatedPrice =
+            initialPrice + initialPrice * (Number(RoomConvenienceFee) / 100);
+          calculatedPrice += Number(initialPrice) * (Number(gstRate) / 100);
+          break;
+        case "Model2":
+        case "Model3":
+          calculatedPrice += Number(initialPrice) * (Number(gstRate) / 100);
+          break;
+        default:
+          calculatedPrice = initialPrice;
+          break;
       }
     } else {
+      console.log("Property pricing model or key is missing.");
       calculatedPrice = initialPrice;
     }
 
@@ -88,9 +95,10 @@ export const addRoomToProperty = async (req, res) => {
     res.status(200).json({
       status: true,
       data: savedRoom,
-      message: "Room Added Successfull",
+      message: "Room Added Successfully",
     });
   } catch (error) {
+    console.error("Error adding room:", error);
     return res.status(500).json({
       success: false,
       message: error.message,
