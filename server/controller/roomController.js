@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import { fileURLToPath } from "url";
 import PropertyDetails from "../models/property.js";
 import PropertyRooms from "../models/propertyRooms.js";
+import GeneralSettings from "../models/settings.js";
 const __filename = fileURLToPath(import.meta.url);
 
 export const addRoomToProperty = async (req, res) => {
@@ -17,15 +18,61 @@ export const addRoomToProperty = async (req, res) => {
       quickBook,
       description,
       folder,
+      price,
+      RoomConvenienceFee,
       amenities,
     } = req.body;
 
-    // Ensure folder is defined and sanitized
+    let images;
     const folderPath = folder ? folder.toLowerCase() : "rooms";
 
-    const images = req.files["image"].map((file) => ({
-      imageUrl: `/images/${folderPath}/${file.filename}`,
-    }));
+    if (req.files["image"]) {
+      images = req.files["image"].map((file) => ({
+        imageUrl: `/images/${folderPath}/${file.filename}`,
+      }));
+    }
+
+    const property = await PropertyDetails.findById(propertyId).populate(
+      "pricingModel_id"
+    );
+
+    console.log("Property Object:", property);
+
+    const initialPrice = Number(price);
+    let calculatedPrice = initialPrice;
+
+    let gstConfig = await GeneralSettings.findOne();
+
+    if (!gstConfig) {
+      gstConfig = new GeneralSettings({ threshold: 7500 });
+    }
+
+    if (!gstConfig.threshold) {
+      gstConfig.threshold = 7500;
+    }
+
+    const gstRate = initialPrice <= gstConfig.threshold ? 12 : 18;
+
+    if (property.pricingModel_id && property.pricingModel_id.key) {
+      const key = property.pricingModel_id.key;
+      switch (key) {
+        case "Model1":
+          calculatedPrice =
+            initialPrice + initialPrice * (Number(RoomConvenienceFee) / 100);
+          calculatedPrice += Number(initialPrice) * (Number(gstRate) / 100);
+          break;
+        case "Model2":
+        case "Model3":
+          calculatedPrice += Number(initialPrice) * (Number(gstRate) / 100);
+          break;
+        default:
+          calculatedPrice = initialPrice;
+          break;
+      }
+    } else {
+      console.log("Property pricing model or key is missing.");
+      calculatedPrice = initialPrice;
+    }
 
     const newRoom = new PropertyRooms({
       propertyId,
@@ -38,6 +85,8 @@ export const addRoomToProperty = async (req, res) => {
       quickBook,
       description,
       images,
+      price: calculatedPrice,
+      initialPrice,
       amenities,
     });
 
@@ -46,9 +95,10 @@ export const addRoomToProperty = async (req, res) => {
     res.status(200).json({
       status: true,
       data: savedRoom,
-      message: "Room Added Successfull",
+      message: "Room Added Successfully",
     });
   } catch (error) {
+    console.error("Error adding room:", error);
     return res.status(500).json({
       success: false,
       message: error.message,
@@ -103,7 +153,7 @@ export const getRoomsByPropertyId = async (req, res) => {
   try {
     const propertyId = req.params.id;
 
-    const room = await PropertyRooms.findOne({ propertyId })
+    const room = await PropertyRooms.find({ propertyId })
       .populate("amenities")
       .exec();
     if (!room) {
@@ -137,6 +187,7 @@ export const updateRoom = async (req, res) => {
       similarRooms,
       enquiry,
       quickBook,
+      price,
       description,
       amenities,
     } = req.body;
@@ -152,7 +203,8 @@ export const updateRoom = async (req, res) => {
         enquiry,
         quickBook,
         description,
-        // images, // Include images if you want to allow updates for this field
+        price,
+        // images,
         amenities,
       },
       { new: true }

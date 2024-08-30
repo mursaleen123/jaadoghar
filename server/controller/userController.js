@@ -45,19 +45,22 @@ export const userRegister = async (req, res) => {
       email,
       password,
       role,
+      folder,
       vendor_details,
       bank_details,
     } = req.body;
 
-    const imageUrl = req.file
-      ? `/images/${folder.toLowerCase()}/${req.file.filename}`
-      : null;
+    let imageUrl = null;
+    if (req.file) {
+      imageUrl = req.file
+        ? `/images/${folder.toLowerCase()}/${req.file.filename}`
+        : null;
 
-    const uploadPath = path.join("public/images", folder);
-    if (!fs.existsSync(uploadPath)) {
-      fs.mkdirSync(uploadPath, { recursive: true });
+      const uploadPath = path.join("public/images", folder);
+      if (!fs.existsSync(uploadPath)) {
+        fs.mkdirSync(uploadPath, { recursive: true });
+      }
     }
-
     if (!(name && phone_no && email && password)) {
       return res.status(400).json({
         success: false,
