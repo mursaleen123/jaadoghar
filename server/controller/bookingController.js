@@ -325,3 +325,17 @@ export const searchBookings = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+export const getUserBookings = async (req, res) => {
+  try {
+    const { email } = req.query;
+    if (!email) {
+      return res.status(400).json({ message: "Please enter email to search" });
+    }
+    const bookings = await Booking.find({ email: email.toLowerCase() });
+    res
+      .status(200)
+      .json({ data: bookings, message: "Bookings retrieved successfully" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
