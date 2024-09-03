@@ -165,14 +165,18 @@ export const calculateCosting = async (req, res) => {
       checkIn,
       checkOut,
       roomCount,
+      roomsIds
     } = req.body;
     let totalPrice = 0;
+    const rooms = await PropertyRooms.find({ 
+      propertyId, 
+      _id: { $in: roomsIds }
+  })
+  .sort({ price: 1 })
+  .exec();
+  
 
-    const rooms = await PropertyRooms.find({ propertyId })
-      .sort({ price: 1 })
-      .exec();
-
-    if (rooms.length < roomCount) {
+    if (rooms.length < roomsIds.length) {
       return res.status(400).json({
         message: "Not enough rooms available for the selected Property.",
       });
