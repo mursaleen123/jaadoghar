@@ -313,7 +313,13 @@ export const searchBookings = async (req, res) => {
     });
 
     if (filteredBookings.length === 0) {
-      return res.status(404).json({ message: "Booking not found" });
+      return res
+        .status(200)
+        .json({
+          status: true,
+          data: filteredBookings,
+          message: "No Booking found",
+        });
     }
 
     res.status(200).json({
