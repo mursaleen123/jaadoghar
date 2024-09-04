@@ -43,7 +43,7 @@ app.get(
 );
 
 // search bookings
-app.get(
+app.post(
   '/searchBookings',
   // checkAdminAuthMiddleware, 
   searchBookings

@@ -19,6 +19,7 @@ export const createBooking = async (req, res) => {
       childrens,
       payment,
       rooms,
+      userId,
     } = req.body;
 
     // Create a new booking instance
@@ -36,6 +37,7 @@ export const createBooking = async (req, res) => {
       childrens,
       payment,
       rooms,
+      userId,
     });
 
     await newBooking.save();
@@ -272,9 +274,17 @@ export const updateBookingStatus = async (req, res) => {
 // Search booking
 export const searchBookings = async (req, res) => {
   try {
-    const { status, propertyName, name, VendorId, BookingStatus } = req.query;
+    const { status, propertyName, name, VendorId, BookingStatus, userName } =
+      req.body;
 
-    const filters = { status, propertyName, name, VendorId, BookingStatus };
+    const filters = {
+      status,
+      propertyName,
+      name,
+      VendorId,
+      BookingStatus,
+      userName,
+    };
     const activeFilters = Object.keys(filters).filter((key) => filters[key]);
 
     if (activeFilters.length > 1) {
@@ -293,6 +303,7 @@ export const searchBookings = async (req, res) => {
 
     let searchCriteria = {};
     let populateOptions = { path: "propertyId" };
+    let userPopulateOptions = {};
 
     switch (activeFilters[0]) {
       case "status":
@@ -315,15 +326,29 @@ export const searchBookings = async (req, res) => {
           { lastName: new RegExp(name, "i") },
         ];
         break;
+      case "userName":
+        userPopulateOptions = {
+          path: "userId",
+          match: {
+            $or: [
+              { name: new RegExp(userName, "i") },
+            ],
+          },
+        };
+        break;
     }
 
     const bookings = await Booking.find(searchCriteria)
       .populate(populateOptions)
+      .populate(userPopulateOptions)
       .exec();
 
     const filteredBookings = bookings.filter((booking) => {
       if (propertyName || VendorId) {
         return booking.propertyId !== null;
+      }
+      if (userName) {
+        return booking.userId !== null;
       }
       return true;
     });
