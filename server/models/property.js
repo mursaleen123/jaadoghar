@@ -130,11 +130,11 @@ const propertySchema = new mongoose.Schema(
       ref: "users",
       default: null,
     },
-    pricingModel_id: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "pricingModel",
-      default: null,
-    },
+    // pricingModel_id: {
+    //   type: mongoose.Schema.Types.ObjectId,
+    //   ref: "pricingModel",
+    //   default: null,
+    // },
     images: [{ imageUrl: { type: String, required: true } }],
   },
   { timestamps: true }
