@@ -2,6 +2,7 @@ import express from 'express';
 import {
   calculateCosting,
   createBooking,
+  getStats,
   searchBookings,
   updateBookingStatus,
 } from '../controller/bookingController.js'; 
@@ -55,6 +56,13 @@ app.get(
   '/getBooking/:id',
   // checkAuthMiddleware,  
   getBookingById
+);
+
+// Get status
+app.get(
+  '/getStats',
+  // checkAuthMiddleware,  
+  getStats
 );
 
 // Update a booking by ID

@@ -1,6 +1,8 @@
 import Booking from "../models/booking.js";
+import PropertyDetails from "../models/property.js";
 import PropertyRooms from "../models/propertyRooms.js";
 import mongoose from "mongoose";
+import Users from "../models/users.js";
 
 // Create a new booking
 export const createBooking = async (req, res) => {
@@ -179,16 +181,15 @@ export const calculateCosting = async (req, res) => {
       .sort({ price: 1 })
       .exec();
 
-    if (rooms.length < roomsIds.length) {
-      return res.status(400).json({
-        message: "Not enough rooms available for the selected Property.",
-      });
-    }
+    // if (rooms.length < roomsIds.length) {
+    //   return res.status(400).json({
+    //     message: "Not enough rooms available for the selected Property.",
+    //   });
+    // }
 
     let totalCapacity = 0;
     let selectedRooms = [];
-
-    for (let i = 0; i < roomCount; i++) {
+    for (let i = 0; i < roomsIds.length; i++) {
       totalCapacity += rooms[i].capacity;
     }
 
@@ -330,9 +331,7 @@ export const searchBookings = async (req, res) => {
         userPopulateOptions = {
           path: "userId",
           match: {
-            $or: [
-              { name: new RegExp(userName, "i") },
-            ],
+            $or: [{ name: new RegExp(userName, "i") }],
           },
         };
         break;
@@ -361,6 +360,36 @@ export const searchBookings = async (req, res) => {
       status: true,
       data: filteredBookings,
       message: "Booking Fetched successfully.",
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Get a stats by ID
+export const getStats = async (req, res) => {
+  try {
+    const totalBookings = await Booking.countDocuments();
+    const totalProperty = await PropertyDetails.countDocuments();
+    const totalUsers = await Users.countDocuments({ role: "user" });
+
+    const totalBookedBill = await Booking.aggregate([
+      { $match: { status: "Booked" } }, // Filter documents where status is "Booked"
+      { $group: { _id: null, totalBill: { $sum: "$bill" } } }, // Sum the 'bill' field
+    ]);
+
+    const totalBill =
+      totalBookedBill.length > 0 ? totalBookedBill[0].totalBill : 0;
+
+    res.status(200).json({
+      status: true,
+      data: {
+        totalBookings,
+        totalProperty,
+        totalUsers,
+        totalBill,
+      },
+      message: "Stats fetched successfully.",
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
