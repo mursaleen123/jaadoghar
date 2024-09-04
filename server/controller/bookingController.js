@@ -102,6 +102,7 @@ export const updateBooking = async (req, res) => {
       persons,
       childrens,
       payment,
+      status,
     } = req.body;
     let updatedFields = {
       firstName,
@@ -115,6 +116,7 @@ export const updateBooking = async (req, res) => {
       persons,
       childrens,
       payment,
+      status,
     };
 
     const updatedBooking = await Booking.findByIdAndUpdate(
@@ -163,14 +165,17 @@ export const calculateCosting = async (req, res) => {
       checkIn,
       checkOut,
       roomCount,
+      roomsIds,
     } = req.body;
     let totalPrice = 0;
-
-    const rooms = await PropertyRooms.find({ propertyId })
+    const rooms = await PropertyRooms.find({
+      propertyId,
+      _id: { $in: roomsIds },
+    })
       .sort({ price: 1 })
       .exec();
 
-    if (rooms.length < roomCount) {
+    if (rooms.length < roomsIds.length) {
       return res.status(400).json({
         message: "Not enough rooms available for the selected Property.",
       });
@@ -241,7 +246,15 @@ export const updateBookingStatus = async (req, res) => {
       return res.status(404).json({ message: "Booking not found" });
     }
 
-    booking.payment = req.body.status || booking.payment;
+    // Update only the fields that are present in the request body
+    if (req.body.payment !== undefined) {
+      booking.payment = req.body.payment;
+    }
+
+    if (req.body.status !== undefined) {
+      booking.status = req.body.status;
+    }
+
     await booking.save();
 
     res.status(200).json({
@@ -257,9 +270,9 @@ export const updateBookingStatus = async (req, res) => {
 // Search booking
 export const searchBookings = async (req, res) => {
   try {
-    const { status, propertyName, name, VendorId } = req.query;
+    const { status, propertyName, name, VendorId, BookingStatus } = req.query;
 
-    const filters = { status, propertyName, name, VendorId };
+    const filters = { status, propertyName, name, VendorId, BookingStatus };
     const activeFilters = Object.keys(filters).filter((key) => filters[key]);
 
     if (activeFilters.length > 1) {
@@ -282,6 +295,9 @@ export const searchBookings = async (req, res) => {
     switch (activeFilters[0]) {
       case "status":
         searchCriteria.payment = status;
+        break;
+      case "BookingStatus":
+        searchCriteria.status = BookingStatus;
         break;
       case "propertyName":
         populateOptions.match = { propertyName: new RegExp(propertyName, "i") };

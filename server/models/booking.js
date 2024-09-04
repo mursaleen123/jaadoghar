@@ -30,6 +30,12 @@ const bookingSchema = new mongoose.Schema(
     bill: { type: Number, required: true },
     persons: { type: Number, required: true },
     childrens: { type: Number, required: true },
+    status: {
+      type: String,
+      enum: ["Booked", "Cancelled"],
+      default: "Booked",
+      required: true,
+    },
     payment: {
       type: String,
       enum: ["Pending", "Paid", "Cancelled"],
