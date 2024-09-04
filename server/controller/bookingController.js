@@ -37,9 +37,7 @@ export const createBooking = async (req, res) => {
       payment,
       rooms,
     });
-
     await newBooking.save();
-
     res.status(200).json({
       status: true,
       data: newBooking,
