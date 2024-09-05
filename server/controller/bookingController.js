@@ -122,7 +122,7 @@ export const createBooking = async (req, res) => {
 
     const mailOptions = {
       from: config.support_email,
-      to: ['rehmanali11121@gmail.com','bthunder418@gmail.com'],
+      to: [user.email],
       subject: "Booking Confirmation",
       html: bookingCreated({
         propertyId,
