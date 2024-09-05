@@ -16,7 +16,10 @@ const propertyRoomSchema = new mongoose.Schema({
   description: { type: String, required: false },
   initialPrice: { type: String, required: false },
   price: { type: String, required: false },
-  image: [
+  iCal1: { type: String, required: false },
+  iCal2: { type: String, required: false },
+  iCal3: { type: String, required: false },
+  images: [
     {
       imageUrl: { type: String, required: false },
     },

@@ -7,6 +7,7 @@ const roomSchema = new mongoose.Schema({
     required: true,
   },
   roomName: { type: String, required: true },
+  iCal: { type: String, required: false },
   roomCapacity: { type: Number, required: true },
   roomPrice: { type: Number, required: true },
   totalRoomPrice: { type: Number, required: true },

@@ -21,7 +21,11 @@ export const addRoomToProperty = async (req, res) => {
       price,
       RoomConvenienceFee,
       amenities,
+      iCal1,
+      iCal2,
+      iCal3,
     } = req.body;
+
     let images;
     const folderPath = folder ? folder.toLowerCase() : "rooms";
 
@@ -33,7 +37,7 @@ export const addRoomToProperty = async (req, res) => {
 
     const property = await PropertyDetails.findById(propertyId);
     const initialPrice = Number(price);
-    let calculatedPrice = Number(price);
+    let calculatedPrice = initialPrice;
 
     let gstConfig = await GeneralSettings.findOne();
 
@@ -62,7 +66,7 @@ export const addRoomToProperty = async (req, res) => {
     //       calculatedPrice + initialPrice * (Number(gstRate) / 100);
     //   }
     // } else {
-      calculatedPrice = initialPrice;
+    calculatedPrice = initialPrice;
     // }
 
     const newRoom = new PropertyRooms({
@@ -79,6 +83,9 @@ export const addRoomToProperty = async (req, res) => {
       price: calculatedPrice,
       initialPrice,
       amenities,
+      iCal1,
+      iCal2,
+      iCal3,
     });
 
     const savedRoom = await newRoom.save();
@@ -86,9 +93,10 @@ export const addRoomToProperty = async (req, res) => {
     res.status(200).json({
       status: true,
       data: savedRoom,
-      message: "Room Added Successfull",
+      message: "Room Added Successfully",
     });
   } catch (error) {
+    console.error("Error adding room:", error);
     return res.status(500).json({
       success: false,
       message: error.message,
@@ -180,6 +188,9 @@ export const updateRoom = async (req, res) => {
       price,
       description,
       amenities,
+      iCal1,
+      iCal2,
+      iCal3,
     } = req.body;
 
     const updatedRoom = await PropertyRooms.findByIdAndUpdate(
@@ -196,6 +207,9 @@ export const updateRoom = async (req, res) => {
         price,
         // images,
         amenities,
+        iCal1,
+        iCal2,
+        iCal3,
       },
       { new: true }
     );

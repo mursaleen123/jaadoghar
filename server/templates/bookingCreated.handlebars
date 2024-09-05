@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jaadooghar OTP</title>
+    <style>
+        body {
+            background-color: #f7fafc;
+            padding: 16px;
+            font-family: sans-serif;
+        }
+
+        .container {
+            max-width: 24rem;
+            margin: 0 auto;
+            background-color: #ffffff;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 0.375rem;
+            overflow: hidden;
+        }
+
+        .content {
+            padding: 16px;
+        }
+
+        .heading {
+            margin-bottom: 16px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .message {
+            margin-bottom: 24px;
+            color: #4a5568;
+            font-size: 1rem;
+        }
+
+        .otp {
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .otp-code {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            color: #2f855a;
+        }
+
+        .footer {
+            margin-top: 24px;
+            color: #718096;
+            font-style: italic;
+        }
+
+        .footer strong {
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body style="font-family: Arial, sans-serif; background-color: #f9f9f9; padding: 20px;">
+  <div class="container" style="background-color: #fff; padding: 20px; margin: 0 auto; width: 80%; max-width: 600px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+    <h1 style="color: #333;">Booking Confirmation for {{firstName}} {{lastName}}</h1>
+    <p>Thank you for booking with us!</p>
+
+    <h2 style="color: #333;">Booking Details:</h2>
+    <p><strong>Check-In:</strong> {{checkIn}}</p>
+    <p><strong>Check-Out:</strong> {{checkOut}}</p>
+    <p><strong>Total Bill:</strong> ${{bill}}</p>
+    <p><strong>Special Request:</strong> {{specialRequest}}</p>
+    <p><strong>Number of Persons:</strong> {{persons}}</p>
+    <p><strong>Number of Children:</strong> {{childrens}}</p>
+    <p><strong>Payment Status:</strong> {{payment}}</p>
+
+    <h2 style="color: #333;">Room Details:</h2>
+    {{#each rooms}}
+    <div style="margin-bottom: 20px;">
+      <h3 style="color: #333;">Room: {{roomName}}</h3>
+      <p><strong>Guests:</strong> {{guestsInRoom}}</p>
+      <p><strong>Price:</strong> ${{totalRoomPrice}}</p>
+    </div>
+    {{/each}}
+
+    <footer style="margin-top: 20px; color: #777;">
+      <p>We look forward to hosting you!</p>
+      <p><strong>Regards,</strong> <br />Jaadooghar.com</p>
+    </footer>
+  </div>
+</body>
+
+
+</html>
