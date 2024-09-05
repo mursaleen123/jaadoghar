@@ -21,7 +21,7 @@ export const addRoomToProperty = async (req, res) => {
       price,
       RoomConvenienceFee,
       amenities,
-      iCal
+      iCal1
     } = req.body;
 
     let images;
@@ -81,7 +81,7 @@ export const addRoomToProperty = async (req, res) => {
       price: calculatedPrice,
       initialPrice,
       amenities,
-      iCal
+      iCal1
     });
 
     const savedRoom = await newRoom.save();
@@ -184,6 +184,7 @@ export const updateRoom = async (req, res) => {
       price,
       description,
       amenities,
+      iCal1
     } = req.body;
 
     const updatedRoom = await PropertyRooms.findByIdAndUpdate(
@@ -200,6 +201,7 @@ export const updateRoom = async (req, res) => {
         price,
         // images,
         amenities,
+        iCal1
       },
       { new: true }
     );
