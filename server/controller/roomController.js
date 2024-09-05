@@ -21,6 +21,7 @@ export const addRoomToProperty = async (req, res) => {
       price,
       RoomConvenienceFee,
       amenities,
+      iCal
     } = req.body;
 
     let images;
@@ -32,12 +33,7 @@ export const addRoomToProperty = async (req, res) => {
       }));
     }
 
-    const property = await PropertyDetails.findById(propertyId).populate(
-      "pricingModel_id"
-    );
-
-    console.log("Property Object:", property);
-
+    const property = await PropertyDetails.findById(propertyId);
     const initialPrice = Number(price);
     let calculatedPrice = initialPrice;
 
@@ -53,26 +49,23 @@ export const addRoomToProperty = async (req, res) => {
 
     const gstRate = initialPrice <= gstConfig.threshold ? 12 : 18;
 
-    if (property.pricingModel_id && property.pricingModel_id.key) {
-      const key = property.pricingModel_id.key;
-      switch (key) {
-        case "Model1":
-          calculatedPrice =
-            initialPrice + initialPrice * (Number(RoomConvenienceFee) / 100);
-          calculatedPrice += Number(initialPrice) * (Number(gstRate) / 100);
-          break;
-        case "Model2":
-        case "Model3":
-          calculatedPrice += Number(initialPrice) * (Number(gstRate) / 100);
-          break;
-        default:
-          calculatedPrice = initialPrice;
-          break;
-      }
-    } else {
-      console.log("Property pricing model or key is missing.");
+    // if (property.pricingModel_id && property.pricingModel_id.key) {
+    //   if (property.pricingModel_id.key === "Model1") {
+    //     calculatedPrice =
+    //       initialPrice + initialPrice * (Number(RoomConvenienceFee) / 100);
+
+    //     calculatedPrice =
+    //       calculatedPrice + initialPrice * (Number(gstRate) / 100);
+    //   } else if (
+    //     property.pricingModel_id.key === "Model2" ||
+    //     property.pricingModel_id.key === "Model3"
+    //   ) {
+    //     calculatedPrice =
+    //       calculatedPrice + initialPrice * (Number(gstRate) / 100);
+    //   }
+    // } else {
       calculatedPrice = initialPrice;
-    }
+    // }
 
     const newRoom = new PropertyRooms({
       propertyId,
@@ -88,6 +81,7 @@ export const addRoomToProperty = async (req, res) => {
       price: calculatedPrice,
       initialPrice,
       amenities,
+      iCal
     });
 
     const savedRoom = await newRoom.save();

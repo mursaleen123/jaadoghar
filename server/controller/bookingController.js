@@ -1,9 +1,9 @@
 import Booking from "../models/booking.js";
 import PropertyRooms from "../models/propertyRooms.js";
+import mongoose from "mongoose";
 import fs from "fs";
 import path from "path";
 import { createEvent } from "ics";
-import mongoose from "mongoose";
 import { fileURLToPath } from "url";
 import config from '../configs/index.js';
 
@@ -27,7 +27,10 @@ export const createBooking = async (req, res) => {
       childrens,
       payment,
       rooms,
+      userId,
     } = req.body;
+
+    // Create a new booking instance
     const newBooking = new Booking({
       propertyId,
       firstName,
@@ -42,10 +45,12 @@ export const createBooking = async (req, res) => {
       childrens,
       payment,
       rooms,
+      userId,
     });
 
-    await newBooking.save();
-    console.log(__dirname);
+    await newBooking.save(); // Save initial booking
+
+    // Define the iCal directory
     const icalDirectory = path.join(__dirname, "../../public/iCals");
     if (!fs.existsSync(icalDirectory)) {
       fs.mkdirSync(icalDirectory, { recursive: true });
@@ -72,29 +77,34 @@ export const createBooking = async (req, res) => {
         location: `Property ID: ${propertyId}`,
         url: `${config.server_url}/bookings/${newBooking._id}`, // Replace with your server URL
         status: "CONFIRMED",
-        organizer: { name: firstName + " " + lastName, email: email },
+        organizer: { name: `${firstName} ${lastName}`, email: email },
       };
 
+      // Create the iCal event
       createEvent(event, (error, value) => {
         if (error) {
           console.log(error);
           throw new Error("Failed to generate iCal file.");
         }
 
+        // Save the iCal file
         const icalFilename = `booking_${newBooking._id}_room_${room.roomId}.ics`;
         const icalPath = path.join(icalDirectory, icalFilename);
 
         fs.writeFileSync(icalPath, value);
 
-        room.iCal = `${config.server_url}/public/iCals/${icalFilename}`; // Replace with your server URL
+        // Update room's iCal link
+        newBooking.rooms[i].iCal = `${config.server_url}/public/iCals/${icalFilename}`;
       });
     }
 
-    console.log(rooms);
+    // Save the updated booking with the iCal links
+    await newBooking.save();
+
     res.status(200).json({
       status: true,
       data: newBooking,
-      message: "Booking created successfully.",
+      message: "Booking created successfully with iCal links.",
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -155,6 +165,8 @@ export const updateBooking = async (req, res) => {
       persons,
       childrens,
       payment,
+      status,
+      iCal
     } = req.body;
     let updatedFields = {
       firstName,
@@ -168,6 +180,8 @@ export const updateBooking = async (req, res) => {
       persons,
       childrens,
       payment,
+      status,
+      iCal
     };
 
     const updatedBooking = await Booking.findByIdAndUpdate(
@@ -216,14 +230,17 @@ export const calculateCosting = async (req, res) => {
       checkIn,
       checkOut,
       roomCount,
+      roomsIds,
     } = req.body;
     let totalPrice = 0;
-
-    const rooms = await PropertyRooms.find({ propertyId })
+    const rooms = await PropertyRooms.find({
+      propertyId,
+      _id: { $in: roomsIds },
+    })
       .sort({ price: 1 })
       .exec();
 
-    if (rooms.length < roomCount) {
+    if (rooms.length < roomsIds.length) {
       return res.status(400).json({
         message: "Not enough rooms available for the selected Property.",
       });
@@ -279,6 +296,132 @@ export const calculateCosting = async (req, res) => {
         selectedRooms,
       },
       message: "Booking Price.",
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// update booking Status
+export const updateBookingStatus = async (req, res) => {
+  try {
+    const booking = await Booking.findById(req.params.id);
+
+    if (!booking) {
+      return res.status(404).json({ message: "Booking not found" });
+    }
+
+    // Update only the fields that are present in the request body
+    if (req.body.payment !== undefined) {
+      booking.payment = req.body.payment;
+    }
+
+    if (req.body.status !== undefined) {
+      booking.status = req.body.status;
+    }
+
+    await booking.save();
+
+    res.status(200).json({
+      status: true,
+      data: booking,
+      message: "Booking status updated successfully.",
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Search booking
+export const searchBookings = async (req, res) => {
+  try {
+    const { status, propertyName, name, VendorId, BookingStatus, userName } =
+      req.body;
+
+    const filters = {
+      status,
+      propertyName,
+      name,
+      VendorId,
+      BookingStatus,
+      userName,
+    };
+    const activeFilters = Object.keys(filters).filter((key) => filters[key]);
+
+    if (activeFilters.length > 1) {
+      return res.status(400).json({
+        error:
+          "Please provide only one search parameter: 'status', 'propertyName', or 'name'.",
+      });
+    }
+
+    if (activeFilters.length === 0) {
+      return res.status(400).json({
+        error:
+          "Please provide a search parameter: 'status', 'propertyName', or 'name'.",
+      });
+    }
+
+    let searchCriteria = {};
+    let populateOptions = { path: "propertyId" };
+    let userPopulateOptions = {};
+
+    switch (activeFilters[0]) {
+      case "status":
+        searchCriteria.payment = status;
+        break;
+      case "BookingStatus":
+        searchCriteria.status = BookingStatus;
+        break;
+      case "propertyName":
+        populateOptions.match = { propertyName: new RegExp(propertyName, "i") };
+        break;
+      case "VendorId":
+        populateOptions.match = {
+          user_id: new mongoose.Types.ObjectId(VendorId),
+        };
+        break;
+      case "name":
+        searchCriteria.$or = [
+          { firstName: new RegExp(name, "i") },
+          { lastName: new RegExp(name, "i") },
+        ];
+        break;
+      case "userName":
+        userPopulateOptions = {
+          path: "userId",
+          match: {
+            $or: [
+              { name: new RegExp(userName, "i") },
+            ],
+          },
+        };
+        break;
+    }
+
+    const bookings = await Booking.find(searchCriteria)
+      .populate(populateOptions)
+      .populate(userPopulateOptions)
+      .exec();
+
+    const filteredBookings = bookings.filter((booking) => {
+      if (propertyName || VendorId) {
+        return booking.propertyId !== null;
+      }
+      if (userName) {
+        return booking.userId !== null;
+      }
+      return true;
+    });
+
+    if (filteredBookings.length === 0) {
+      return res.status(404).json({ message: "Booking not found" });
+    }
+
+    res.status(200).json({
+      status: true,
+      data: filteredBookings,
+      message: "Booking Fetched successfully.",
     });
   } catch (error) {
     res.status(500).json({ message: error.message });

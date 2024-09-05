@@ -21,6 +21,11 @@ const bookingSchema = new mongoose.Schema(
       ref: "Property",
       required: true,
     },
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "users",
+      default: null,
+    },
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
     phone: { type: String, required: true },
@@ -31,6 +36,12 @@ const bookingSchema = new mongoose.Schema(
     bill: { type: Number, required: true },
     persons: { type: Number, required: true },
     childrens: { type: Number, required: true },
+    status: {
+      type: String,
+      enum: ["Booked", "Cancelled"],
+      default: "Booked",
+      required: true,
+    },
     payment: {
       type: String,
       enum: ["Pending", "Paid", "Cancelled"],
