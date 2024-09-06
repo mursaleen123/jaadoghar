@@ -24,10 +24,18 @@ app.post(
 );
 
 // Get all filters
-app.get("/getfilters", checkAuthMiddleware, getFilters);
+app.get(
+  "/getfilters",
+  //  checkAuthMiddleware,
+  getFilters
+);
 
 // Get a specific filter by ID
-app.get("/getfilter/:id", checkAuthMiddleware, getfilterById);
+app.get(
+  "/getfilter/:id",
+  //  checkAuthMiddleware,
+  getfilterById
+);
 
 // Update a filter by ID
 app.put("/updatefilter/:id", checkAdminAuthMiddleware, updateFilter);

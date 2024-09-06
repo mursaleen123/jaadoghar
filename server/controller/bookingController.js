@@ -470,9 +470,9 @@ export const searchBookings = async (req, res) => {
 // Get a stats by ID
 export const getStats = async (req, res) => {
   try {
-    const totalBookings = await Booking.find({});
-    const totalProperty = await PropertyDetails.find({});
-    const totalUsers = await Users.find({ role: "user" });
+    const totalBookings = await Booking.countDocuments({});
+    const totalProperty = await PropertyDetails.countDocuments({});
+    const totalUsers = await Users.find({ role: "user" }).countDocuments({});
 
     // const totalBookedBill = await Booking.aggregate([
     //   { $match: { status: "Booked" } }, // Filter documents where status is "Booked"

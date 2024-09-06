@@ -35,13 +35,21 @@ app.post(
 );
 
 // Get all properties
-app.get("/getProperties", checkAuthMiddleware, getProperties);
+app.get(
+  "/getProperties",
+  // checkAuthMiddleware,
+  getProperties
+);
 
 // Get all properties
 app.get("/searchProperties", searchProperties);
 
 // Get a specific property by ID
-app.get("/getProperty/:id", checkAuthMiddleware, getPropertyById);
+app.get(
+  "/getProperty/:id",
+  //  checkAuthMiddleware,
+  getPropertyById
+);
 
 // Update a property by ID
 app.put("/updateProperty/:id", checkAdminAuthMiddleware, updateProperty);
