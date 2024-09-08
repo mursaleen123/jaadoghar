@@ -37,7 +37,8 @@ export const addRoomToProperty = async (req, res) => {
 
     const property = await PropertyDetails.findById(propertyId);
     const initialPrice = Number(price);
-    let calculatedPrice = initialPrice;
+    const cfPercentage = Number(RoomConvenienceFee);
+    let calculatedPrice = (initialPrice * cfPercentage) / 100 + initialPrice;
 
     let gstConfig = await GeneralSettings.findOne();
 
@@ -66,7 +67,7 @@ export const addRoomToProperty = async (req, res) => {
     //       calculatedPrice + initialPrice * (Number(gstRate) / 100);
     //   }
     // } else {
-    calculatedPrice = initialPrice;
+    // calculatedPrice = initialPrice;
     // }
 
     const newRoom = new PropertyRooms({
