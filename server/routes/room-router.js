@@ -1,7 +1,6 @@
 import express from "express";
 import {} from "../controller/userController.js";
 
-
 import {
   addRoomToProperty,
   deleteRoom,
@@ -15,11 +14,7 @@ import { upload } from "../helpers/uploadFile.js";
 const app = express();
 
 const uploadRoomImages = upload.fields([{ name: "image", maxCount: 10 }]);
-app.post(
-  "/addRoomToProperty",
-  uploadRoomImages,
-  addRoomToProperty
-);
+app.post("/addRoomToProperty", uploadRoomImages, addRoomToProperty);
 
 // Get all Rooms
 app.get(
@@ -44,8 +39,8 @@ app.get(
 // Update a room by ID
 app.put(
   "/updateRoom/:id",
-  // checkAdminAuthMiddleware,
-  upload.none("image"),
+  //uploadRoomImages checkAdminAuthMiddleware,
+  uploadRoomImages,
   updateRoom
 );
 

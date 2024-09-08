@@ -178,43 +178,22 @@ export const getRoomsByPropertyId = async (req, res) => {
 export const updateRoom = async (req, res) => {
   try {
     const { id } = req.params;
-    const {
-      name,
-      capacity,
-      size,
-      beds,
-      similarRooms,
-      enquiry,
-      quickBook,
-      price,
-      description,
-      amenities,
-      iCal1,
-      iCal2,
-      iCal3,
-    } = req.body;
+    const updates = req.body;
+    let images;
+    const folderPath = folder ? folder.toLowerCase() : "rooms";
 
+    if (req.files["image"]) {
+      images = req.files["image"].map((file) => ({
+        imageUrl: `/images/${folderPath}/${file.filename}`,
+      }));
+    }
     const updatedRoom = await PropertyRooms.findByIdAndUpdate(
       id,
+      { ...updates, images: images },
       {
-        name,
-        capacity,
-        size,
-        beds,
-        similarRooms,
-        enquiry,
-        quickBook,
-        description,
-        price,
-        // images,
-        amenities,
-        iCal1,
-        iCal2,
-        iCal3,
-      },
-      { new: true }
+        new: true,
+      }
     );
-
     if (!updatedRoom) {
       return res.status(404).json({
         status: false,
