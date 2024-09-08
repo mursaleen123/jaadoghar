@@ -308,25 +308,30 @@ export const calculateCosting = async (req, res) => {
     );
 
     let remainingGuests = adultCount;
-
     for (let i = 0; i < roomCount; i++) {
       const room = rooms[i];
-      const roomCapacity = room.capacity;
+      const roomCapacity = room?.capacity;
 
       let guestsInRoom = Math.min(roomCapacity, remainingGuests);
       remainingGuests -= guestsInRoom;
 
-      const roomPrice = room.price * nights;
+      const roomPrice = room?.price * nights;
       totalPrice += roomPrice;
 
       selectedRooms.push({
-        roomId: room._id,
-        roomName: room.name,
-        roomCapacity: room.capacity,
-        roomPrice: room.price,
-        totalRoomPrice: roomPrice,
+        roomId: room?._id,
+        roomName: room?.name,
+        roomCapacity: room?.capacity,
+        roomPrice: room?.price,
+        totalRoomPrice: totalPrice,
         guestsInRoom,
       });
+    }
+    let priceWithTex = 0;
+    if (totalPrice < 7500) {
+      priceWithTex = (totalPrice * 12) / 100 + totalPrice;
+    } else {
+      priceWithTex = (totalPrice * 18) / 100 + totalPrice;
     }
 
     res.status(200).json({
@@ -334,6 +339,7 @@ export const calculateCosting = async (req, res) => {
       data: {
         ...req.body,
         price: totalPrice,
+        priceWithTex: Math.round(priceWithTex),
         selectedRooms,
       },
       message: "Booking Price.",
