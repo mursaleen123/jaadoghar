@@ -32,7 +32,7 @@ export const propertyCreate = async (req, res) => {
       additionalHost,
       fee,
       user_id,
-      pricingModelId,
+      // pricingModelId,
       adultPersons,
       destinations,
     } = req.body;
@@ -41,12 +41,12 @@ export const propertyCreate = async (req, res) => {
     let finalPrice = price;
     let PricingModels;
 
-    if (pricingModelId) {
-      PricingModels = await pricingModel.findOne({
-        _id: pricingModelId,
-        Persons: 1,
-      });
-    }
+    // if (pricingModelId) {
+    //   PricingModels = await pricingModel.findOne({
+    //     _id: pricingModelId,
+    //     Persons: 1,
+    //   });
+    // }
 
     let images = [];
     if (req.files && req.files["images"]) {

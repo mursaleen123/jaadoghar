@@ -28,6 +28,7 @@
     "functions-have-names": "^1.2.3",
     "handlebars": "^4.7.8",
     "helmet": "^6.0.1",
+    "ics": "^3.7.6",
     "install": "^0.13.0",
     "jsonwebtoken": "^9.0.2",
     "juice": "^9.1.0",

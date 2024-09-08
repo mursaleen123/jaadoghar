@@ -2,7 +2,7 @@ import express from "express";
 import {
   calculateCosting,
   createBooking,
-  getUserBookings,
+  getStats,
   searchBookings,
   updateBookingStatus,
 } from "../controller/bookingController.js";
@@ -44,7 +44,7 @@ app.get(
 );
 
 // search bookings
-app.get(
+app.post(
   "/searchBookings",
   // checkAdminAuthMiddleware,
   searchBookings
@@ -57,7 +57,13 @@ app.get(
   getBookingById
 );
 
-app.get("/getUserBookings", getUserBookings);
+// Get status
+app.get(
+  "/getStats",
+  // checkAuthMiddleware,
+  getStats
+);
+
 // Update a booking by ID
 app.put(
   "/updateBooking/:id",
