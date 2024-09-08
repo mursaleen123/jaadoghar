@@ -276,10 +276,38 @@ export const updateProperty = async (req, res) => {
   try {
     const { id } = req.params;
     const updates = req.body;
+    console.log(updates);
+    let images = [];
+    if (req.files && req.files["images"]) {
+      images = req.files["images"].map((file) => ({
+        imageUrl: `/images/${
+          req.body.folder ? req.body.folder.toLowerCase() : "amenities"
+        }/${file.filename}`,
+      }));
+    }
 
-    const property = await PropertyDetails.findByIdAndUpdate(id, updates, {
-      new: true,
+    const updatedExperiences = updates?.experiences.map((exp, index) => {
+      let experienceImage = exp.experienceImages;
+
+      if (
+        req.files["experienceImages"] &&
+        req.files["experienceImages"][index]
+      ) {
+        experienceImage = `/images/amenities/${req.files["experienceImages"][index].filename}`;
+      }
+
+      return {
+        ...exp,
+        experienceImages: experienceImage || "",
+      };
     });
+    const property = await PropertyDetails.findByIdAndUpdate(
+      id,
+      { ...updates, images: images, experiences: updatedExperiences },
+      {
+        new: true,
+      }
+    );
 
     if (!property) {
       return res.status(404).json({

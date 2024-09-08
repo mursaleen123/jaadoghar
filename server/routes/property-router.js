@@ -21,7 +21,7 @@ import { upload } from "../helpers/uploadFile.js";
 
 const app = express();
 export const uploadPropertyImages = upload.fields([
-  { name: "images", maxCount: 10 },
+  { name: "images", maxCount: 20 },
   { name: "experienceImages", maxCount: 10 },
 ]);
 app.post(
@@ -52,7 +52,12 @@ app.get(
 );
 
 // Update a property by ID
-app.put("/updateProperty/:id", checkAdminAuthMiddleware, updateProperty);
+app.put(
+  "/updateProperty/:id",
+  uploadPropertyImages,
+  checkAdminAuthMiddleware,
+  updateProperty
+);
 
 // Delete a property by ID
 app.delete("/deleteProperty/:id", checkAdminAuthMiddleware, deleteProperty);
