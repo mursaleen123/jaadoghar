@@ -160,11 +160,11 @@ export const addRoomToProperty = async (room) => {
 export const getProperties = async (req, res) => {
   try {
     let query = {};
+    if (req?.user.role === "vendor") {
 
-    // if (req.user.role === "vendor") {
-    //   query = { user_id: req.user._id };
-    //   query = { user_id: req.user._id };
-    // }
+     query = { user_id: req.user._id };
+      query = { user_id: req.user._id };
+    }
 
     const properties = await PropertyDetails.find(query)
       .populate("amenities")
