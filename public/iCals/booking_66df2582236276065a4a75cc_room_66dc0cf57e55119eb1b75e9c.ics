@@ -1,0 +1,20 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+CALSCALE:GREGORIAN
+PRODID:adamgibbons/ics
+METHOD:PUBLISH
+X-PUBLISHED-TTL:PT1H
+BEGIN:VEVENT
+UID:_WOYYWzpNywpLhL1K-Sap
+SUMMARY:Booking for Marvin Stone Ahmed - Room: Cottage Hornbill
+DTSTAMP:20240909T164242Z
+DTSTART;VALUE=DATE:20240908
+DTEND;VALUE=DATE:20240909
+DESCRIPTION:Room details:\n- Room Name: Cottage Hornbill\n- Guests: 4\n- To
+	tal Price: 6272\n- Special Request: Please Make sure rooms are cleaned
+URL:http://localhost:9000/bookings/66df2582236276065a4a75cc
+LOCATION:Property ID: 66c1be5b6f180398030b7c3d
+STATUS:CONFIRMED
+ORGANIZER;CN="Marvin Stone Ahmed":MAILTO:ahmadbutt6624@gmail.com
+END:VEVENT
+END:VCALENDAR

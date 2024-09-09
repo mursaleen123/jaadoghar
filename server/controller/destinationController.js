@@ -1,6 +1,7 @@
 import path from "path";
 import fs from "fs";
 import Destination from "../models/destinations.js";
+import PropertyDetails from "../models/property.js";
 
 // Create a new Destination
 export const createDestination = async (req, res) => {
@@ -63,8 +64,8 @@ export const getDestinationById = async (req, res) => {
 // Update an colletion by ID
 export const updateDestination = async (req, res) => {
   try {
-    const { name,  description, folder } = req.body;
-    let updatedFields = { name,  description };
+    const { name, description, folder } = req.body;
+    let updatedFields = { name, description };
 
     if (req.file) {
       const uploadPath = path.join("public/images", folder.toLowerCase());
@@ -75,7 +76,6 @@ export const updateDestination = async (req, res) => {
 
       const imageUrl = `/images/${folder}/${req.file.filename}`;
       updatedFields.imageUrl = imageUrl;
-
     }
 
     const updatedDestination = await Destination.findByIdAndUpdate(
@@ -101,7 +101,9 @@ export const updateDestination = async (req, res) => {
 // Delete an Destination by ID
 export const deleteDestination = async (req, res) => {
   try {
-    const deletedDestination = await Destination.findByIdAndDelete(req.params.id);
+    const deletedDestination = await Destination.findByIdAndDelete(
+      req.params.id
+    );
     if (!deletedDestination) {
       return res.status(404).json({ message: "Destination not found" });
     }
@@ -110,6 +112,25 @@ export const deleteDestination = async (req, res) => {
       data: [],
       message: "Destination deleted successfully.",
     });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const getPropertyWithDestiantions = async (req, res) => {
+  try {
+    const properties = await PropertyDetails.find().populate("destinations");
+
+    const data = properties.reduce((acc, prop) => {
+      const destinationName = prop?.destinations[0]?.name || "Unknown";
+      if (!acc[destinationName]) {
+        acc[destinationName] = [];
+      }
+      acc[destinationName].push(prop?.propertyName);
+      return acc;
+    }, {});
+    console.log(data);
+    res.status(200).json(data);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
