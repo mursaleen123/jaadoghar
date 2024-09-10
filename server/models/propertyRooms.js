@@ -14,8 +14,16 @@ const propertyRoomSchema = new mongoose.Schema({
   enquiry: { type: Boolean, required: false },
   quickBook: { type: Boolean, required: false },
   description: { type: String, required: false },
-  initialPrice: { type: String, required: false },
-  price: { type: String, required: false },
+  // initialPrice: { type: String, required: false },
+  pricing: { type: Object, required: true },
+  // defaultWeekendPricing: { type: Object, required: true },
+  RoomConvenienceFee: { type: Number, required: false },
+  seasonPricing: [
+    {
+      type: Object,
+      required: false,
+    },
+  ],
   images: [
     {
       imageUrl: { type: String, required: false },

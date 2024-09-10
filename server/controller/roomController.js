@@ -18,7 +18,9 @@ export const addRoomToProperty = async (req, res) => {
       quickBook,
       description,
       folder,
-      price,
+      // price,
+      pricing,
+      seasonPricing,
       RoomConvenienceFee,
       amenities,
     } = req.body;
@@ -30,42 +32,42 @@ export const addRoomToProperty = async (req, res) => {
         imageUrl: `/images/${folderPath}/${file.filename}`,
       }));
     }
+    const pricingObject = JSON.parse(pricing);
+    // const property = await PropertyDetails.findById(propertyId).populate(
+    //   "pricingModel_id"
+    // );
+    // const initialPrice = Number(price);
+    // let calculatedPrice = Number(price);
 
-    const property = await PropertyDetails.findById(propertyId).populate(
-      "pricingModel_id"
-    );
-    const initialPrice = Number(price);
-    let calculatedPrice = Number(price);
+    // let gstConfig = await GeneralSettings.findOne();
 
-    let gstConfig = await GeneralSettings.findOne();
+    // if (!gstConfig) {
+    //   gstConfig = new GeneralSettings({ threshold: 7500 });
+    // }
 
-    if (!gstConfig) {
-      gstConfig = new GeneralSettings({ threshold: 7500 });
-    }
+    // if (!gstConfig.threshold) {
+    //   gstConfig.threshold = 7500;
+    // }
 
-    if (!gstConfig.threshold) {
-      gstConfig.threshold = 7500;
-    }
+    // const gstRate = initialPrice <= gstConfig.threshold ? 12 : 18;
 
-    const gstRate = initialPrice <= gstConfig.threshold ? 12 : 18;
+    // if (property.pricingModel_id && property.pricingModel_id.key) {
+    //   if (property.pricingModel_id.key === "Model1") {
+    //     calculatedPrice =
+    //       initialPrice + initialPrice * (Number(RoomConvenienceFee) / 100);
 
-    if (property.pricingModel_id && property.pricingModel_id.key) {
-      if (property.pricingModel_id.key === "Model1") {
-        calculatedPrice =
-          initialPrice + initialPrice * (Number(RoomConvenienceFee) / 100);
-
-        calculatedPrice =
-          calculatedPrice + initialPrice * (Number(gstRate) / 100);
-      } else if (
-        property.pricingModel_id.key === "Model2" ||
-        property.pricingModel_id.key === "Model3"
-      ) {
-        calculatedPrice =
-          calculatedPrice + initialPrice * (Number(gstRate) / 100);
-      }
-    } else {
-      calculatedPrice = initialPrice;
-    }
+    //     calculatedPrice =
+    //       calculatedPrice + initialPrice * (Number(gstRate) / 100);
+    //   } else if (
+    //     property.pricingModel_id.key === "Model2" ||
+    //     property.pricingModel_id.key === "Model3"
+    //   ) {
+    //     calculatedPrice =
+    //       calculatedPrice + initialPrice * (Number(gstRate) / 100);
+    //   }
+    // } else {
+    //   calculatedPrice = initialPrice;
+    // }
 
     const newRoom = new PropertyRooms({
       propertyId,
@@ -78,8 +80,9 @@ export const addRoomToProperty = async (req, res) => {
       quickBook,
       description,
       images,
-      price: calculatedPrice,
-      initialPrice,
+      pricing: pricingObject,
+      seasonPricing,
+      RoomConvenienceFee,
       amenities,
     });
 
