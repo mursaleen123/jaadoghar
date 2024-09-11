@@ -21,6 +21,7 @@ import destinationRouter from "./server/routes/destination-router.js";
 import faqsRouter from "./server/routes/faqs-router.js";
 import bookingRouter from "./server/routes/booking-router.js";
 import settingRouter from "./server/routes/settings-router.js";
+import seasonRouter from "./server/routes/season-routes.js";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -44,6 +45,7 @@ app.use("/api/v1", destinationRouter);
 app.use("/api/v1", faqsRouter);
 app.use("/api/v1", bookingRouter);
 app.use("/api/v1", settingRouter);
+app.use("/api/v1", seasonRouter);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
