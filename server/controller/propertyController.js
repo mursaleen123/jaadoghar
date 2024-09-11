@@ -160,11 +160,10 @@ export const addRoomToProperty = async (room) => {
 export const getProperties = async (req, res) => {
   try {
     let query = {};
-    if (req?.user.role === "vendor") {
-
-     query = { user_id: req.user._id };
-      query = { user_id: req.user._id };
-    }
+    // if (req?.user.role === "vendor") {
+    //   query = { user_id: req.user._id };
+    //   query = { user_id: req.user._id };
+    // }
 
     const properties = await PropertyDetails.find(query)
       .populate("amenities")
@@ -351,5 +350,40 @@ export const deleteProperty = async (req, res) => {
       success: false,
       message: error.message,
     });
+  }
+};
+export const getPropertiesByDestination = async (req, res) => {
+  try {
+    const { destination } = req.params;
+
+    const properties = await PropertyDetails.find().populate("destinations");
+
+    const data = properties.filter((property) => {
+      return property?.destinations?.some((dest) => dest.name === destination);
+    });
+
+    res.status(200).json({ success: true, data });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error });
+  }
+};
+export const getPropertiesByPrice = async (req, res) => {
+  try {
+    const { price } = req.params;
+    const priceValue = parseFloat(price);
+
+    if (isNaN(priceValue)) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid price value" });
+    }
+    const properties = await PropertyRooms.find({
+      price: { $lt: priceValue },
+    }).populate("propertyId");
+
+    res.status(200).json({ success: true, data: properties });
+  } catch (error) {
+    console.error("Error fetching properties by price:", error);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };

@@ -12,6 +12,8 @@ import { propertyValidate } from "../validators/propertyValidator.js";
 import {
   deleteProperty,
   getProperties,
+  getPropertiesByDestination,
+  getPropertiesByPrice,
   getPropertyById,
   propertyCreate,
   searchProperties,
@@ -49,6 +51,16 @@ app.get(
   "/getProperty/:id",
   //  checkAuthMiddleware,
   getPropertyById
+);
+app.get(
+  "/getPropertiesByDestination/:destination",
+  //  checkAuthMiddleware,
+  getPropertiesByDestination
+);
+app.get(
+  "/getPropertiesByPrice/:price",
+  //  checkAuthMiddleware,
+  getPropertiesByPrice
 );
 
 // Update a property by ID
