@@ -1,0 +1,20 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+CALSCALE:GREGORIAN
+PRODID:adamgibbons/ics
+METHOD:PUBLISH
+X-PUBLISHED-TTL:PT1H
+BEGIN:VEVENT
+UID:eoWzEkjWkuu4sZe0338v8
+SUMMARY:Booking for Rehman ali Ahmed - Room: Cottage Hornbill
+DTSTAMP:20240911T045344Z
+DTSTART;VALUE=DATE:20240910
+DTEND;VALUE=DATE:20240911
+DESCRIPTION:Room details:\n- Room Name: Cottage Hornbill\n- Guests: 4\n- To
+	tal Price: 6272\n- Special Request: Please Make sure rooms are cleaned
+URL:http://localhost:9000/bookings/66e122581dd7fe34062db8c1
+LOCATION:Property ID: 66c1be5b6f180398030b7c3d
+STATUS:CONFIRMED
+ORGANIZER;CN="Rehman ali Ahmed":MAILTO:rehmanali11121@gmail.com
+END:VEVENT
+END:VCALENDAR

@@ -32,7 +32,7 @@ export const propertyCreate = async (req, res) => {
       additionalHost,
       fee,
       user_id,
-      pricingModelId,
+      // pricingModelId,
       adultPersons,
       destinations,
     } = req.body;
@@ -41,12 +41,12 @@ export const propertyCreate = async (req, res) => {
     let finalPrice = price;
     let PricingModels;
 
-    if (pricingModelId) {
-      PricingModels = await pricingModel.findOne({
-        _id: pricingModelId,
-        Persons: 1,
-      });
-    }
+    // if (pricingModelId) {
+    //   PricingModels = await pricingModel.findOne({
+    //     _id: pricingModelId,
+    //     Persons: 1,
+    //   });
+    // }
 
     let images = [];
     if (req.files && req.files["images"]) {
@@ -160,11 +160,10 @@ export const addRoomToProperty = async (room) => {
 export const getProperties = async (req, res) => {
   try {
     let query = {};
-
-    if (req?.user?.role === "vendor") {
-      query = { user_id: req.user._id };
-      query = { user_id: req.user._id };
-    }
+    // if (req?.user.role === "vendor") {
+    //   query = { user_id: req.user._id };
+    //   query = { user_id: req.user._id };
+    // }
 
     const properties = await PropertyDetails.find(query)
       .populate("amenities")
@@ -276,10 +275,38 @@ export const updateProperty = async (req, res) => {
   try {
     const { id } = req.params;
     const updates = req.body;
+    console.log(updates);
+    let images = [];
+    if (req.files && req.files["images"]) {
+      images = req.files["images"].map((file) => ({
+        imageUrl: `/images/${
+          req.body.folder ? req.body.folder.toLowerCase() : "amenities"
+        }/${file.filename}`,
+      }));
+    }
 
-    const property = await PropertyDetails.findByIdAndUpdate(id, updates, {
-      new: true,
+    const updatedExperiences = updates?.experiences.map((exp, index) => {
+      let experienceImage = exp.experienceImages;
+
+      if (
+        req.files["experienceImages"] &&
+        req.files["experienceImages"][index]
+      ) {
+        experienceImage = `/images/amenities/${req.files["experienceImages"][index].filename}`;
+      }
+
+      return {
+        ...exp,
+        experienceImages: experienceImage || "",
+      };
     });
+    const property = await PropertyDetails.findByIdAndUpdate(
+      id,
+      { ...updates, images: images, experiences: updatedExperiences },
+      {
+        new: true,
+      }
+    );
 
     if (!property) {
       return res.status(404).json({
@@ -323,5 +350,40 @@ export const deleteProperty = async (req, res) => {
       success: false,
       message: error.message,
     });
+  }
+};
+export const getPropertiesByDestination = async (req, res) => {
+  try {
+    const { destination } = req.params;
+
+    const properties = await PropertyDetails.find().populate("destinations");
+
+    const data = properties.filter((property) => {
+      return property?.destinations?.some((dest) => dest.name === destination);
+    });
+
+    res.status(200).json({ success: true, data });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error });
+  }
+};
+export const getPropertiesByPrice = async (req, res) => {
+  try {
+    const { price } = req.params;
+    const priceValue = parseFloat(price);
+
+    if (isNaN(priceValue)) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid price value" });
+    }
+    const properties = await PropertyRooms.find({
+      price: { $lt: priceValue },
+    }).populate("propertyId");
+
+    res.status(200).json({ success: true, data: properties });
+  } catch (error) {
+    console.error("Error fetching properties by price:", error);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };

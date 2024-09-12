@@ -12,6 +12,8 @@ import { propertyValidate } from "../validators/propertyValidator.js";
 import {
   deleteProperty,
   getProperties,
+  getPropertiesByDestination,
+  getPropertiesByPrice,
   getPropertyById,
   propertyCreate,
   searchProperties,
@@ -21,7 +23,7 @@ import { upload } from "../helpers/uploadFile.js";
 
 const app = express();
 export const uploadPropertyImages = upload.fields([
-  { name: "images", maxCount: 10 },
+  { name: "images", maxCount: 20 },
   { name: "experienceImages", maxCount: 10 },
 ]);
 app.post(
@@ -35,16 +37,39 @@ app.post(
 );
 
 // Get all properties
-app.get("/getProperties", getProperties);
+app.get(
+  "/getProperties",
+  // checkAuthMiddleware,
+  getProperties
+);
 
 // Get all properties
 app.get("/searchProperties", searchProperties);
 
 // Get a specific property by ID
-app.get("/getProperty/:id", getPropertyById);
+app.get(
+  "/getProperty/:id",
+  //  checkAuthMiddleware,
+  getPropertyById
+);
+app.get(
+  "/getPropertiesByDestination/:destination",
+  //  checkAuthMiddleware,
+  getPropertiesByDestination
+);
+app.get(
+  "/getPropertiesByPrice/:price",
+  //  checkAuthMiddleware,
+  getPropertiesByPrice
+);
 
 // Update a property by ID
-app.put("/updateProperty/:id", checkAdminAuthMiddleware, updateProperty);
+app.put(
+  "/updateProperty/:id",
+  uploadPropertyImages,
+  checkAdminAuthMiddleware,
+  updateProperty
+);
 
 // Delete a property by ID
 app.delete("/deleteProperty/:id", checkAdminAuthMiddleware, deleteProperty);

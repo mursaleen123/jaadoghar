@@ -23,7 +23,11 @@ export const addRoomToProperty = async (req, res) => {
       seasonPricing,
       RoomConvenienceFee,
       amenities,
+      iCal1,
+      iCal2,
+      iCal3,
     } = req.body;
+
     let images;
     const folderPath = folder ? folder.toLowerCase() : "rooms";
 
@@ -32,12 +36,11 @@ export const addRoomToProperty = async (req, res) => {
         imageUrl: `/images/${folderPath}/${file.filename}`,
       }));
     }
-    const pricingObject = JSON.parse(pricing);
-    // const property = await PropertyDetails.findById(propertyId).populate(
-    //   "pricingModel_id"
-    // );
-    // const initialPrice = Number(price);
-    // let calculatedPrice = Number(price);
+
+    const property = await PropertyDetails.findById(propertyId);
+    const initialPrice = Number(price);
+    const cfPercentage = Number(RoomConvenienceFee);
+    let calculatedPrice = (initialPrice * cfPercentage) / 100 + initialPrice;
 
     // let gstConfig = await GeneralSettings.findOne();
 
@@ -66,7 +69,7 @@ export const addRoomToProperty = async (req, res) => {
     //       calculatedPrice + initialPrice * (Number(gstRate) / 100);
     //   }
     // } else {
-    //   calculatedPrice = initialPrice;
+    // calculatedPrice = initialPrice;
     // }
 
     const newRoom = new PropertyRooms({
@@ -84,6 +87,9 @@ export const addRoomToProperty = async (req, res) => {
       seasonPricing,
       RoomConvenienceFee,
       amenities,
+      iCal1,
+      iCal2,
+      iCal3,
     });
 
     const savedRoom = await newRoom.save();
@@ -91,9 +97,10 @@ export const addRoomToProperty = async (req, res) => {
     res.status(200).json({
       status: true,
       data: savedRoom,
-      message: "Room Added Successfull",
+      message: "Room Added Successfully",
     });
   } catch (error) {
+    console.error("Error adding room:", error);
     return res.status(500).json({
       success: false,
       message: error.message,
@@ -174,37 +181,22 @@ export const getRoomsByPropertyId = async (req, res) => {
 export const updateRoom = async (req, res) => {
   try {
     const { id } = req.params;
-    const {
-      name,
-      capacity,
-      size,
-      beds,
-      similarRooms,
-      enquiry,
-      quickBook,
-      price,
-      description,
-      amenities,
-    } = req.body;
+    const updates = req.body;
+    let images;
+    const folderPath = folder ? folder.toLowerCase() : "rooms";
 
+    if (req.files["image"]) {
+      images = req.files["image"].map((file) => ({
+        imageUrl: `/images/${folderPath}/${file.filename}`,
+      }));
+    }
     const updatedRoom = await PropertyRooms.findByIdAndUpdate(
       id,
+      { ...updates, images: images },
       {
-        name,
-        capacity,
-        size,
-        beds,
-        similarRooms,
-        enquiry,
-        quickBook,
-        description,
-        price,
-        // images,
-        amenities,
-      },
-      { new: true }
+        new: true,
+      }
     );
-
     if (!updatedRoom) {
       return res.status(404).json({
         status: false,

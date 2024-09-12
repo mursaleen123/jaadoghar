@@ -46,7 +46,11 @@ app.post(
   validateMiddleware,
   passwordChange
 );
-app.get("/getUser", checkAuthMiddleware, getUser);
+app.get(
+  "/getUser",
+  // checkAuthMiddleware,
+  getUser
+);
 app.get("/getUserListing", getUserListing); // Uncomment if needed: checkAdminAuthMiddleware
 app.get("/getVendorListing", getVendorListing);
 app.post(

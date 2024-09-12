@@ -1,22 +1,6 @@
 import express from "express";
-import config from "../configs/index.js"; // Ensure the correct path and file extension
-import {} from "../controller/userController.js"; // Ensure the correct path and file extension
-import {
-  checkAuthMiddleware,
-  checkAdminAuthMiddleware,
-  checkVendorAuthMiddleware,
-} from "../middlewares.js"; // Ensure the correct path and file extension
+import {} from "../controller/userController.js";
 
-import validateMiddleware from "../middlewares/validationMiddleware.js"; // Ensure the correct path and file extension
-import { propertyValidate } from "../validators/propertyValidator.js";
-import {
-  deleteProperty,
-  getProperties,
-  getPropertyById,
-  propertyCreate,
-  searchProperties,
-  updateProperty,
-} from "../controller/propertyController.js";
 import {
   addRoomToProperty,
   deleteRoom,
@@ -30,12 +14,7 @@ import { upload } from "../helpers/uploadFile.js";
 const app = express();
 
 const uploadRoomImages = upload.fields([{ name: "image", maxCount: 10 }]);
-app.post(
-  "/addRoomToProperty",
-
-  uploadRoomImages,
-  addRoomToProperty
-);
+app.post("/addRoomToProperty", uploadRoomImages, addRoomToProperty);
 
 // Get all Rooms
 app.get(
@@ -60,8 +39,8 @@ app.get(
 // Update a room by ID
 app.put(
   "/updateRoom/:id",
-  // checkAdminAuthMiddleware,
-  upload.none("image"),
+  //uploadRoomImages checkAdminAuthMiddleware,
+  uploadRoomImages,
   updateRoom
 );
 
