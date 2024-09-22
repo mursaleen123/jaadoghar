@@ -275,8 +275,6 @@ export const updateProperty = async (req, res) => {
   try {
     const { id } = req.params;
     const updates = req.body;
-    console.log(updates);
-    let images = [];
     if (req.files && req.files["images"]) {
       images = req.files["images"].map((file) => ({
         imageUrl: `/images/${

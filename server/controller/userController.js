@@ -12,6 +12,7 @@ import handlebars from "handlebars";
 import { fileURLToPath } from "url";
 import VendorDetails from "../models/vendorDetails.js";
 import BankDetails from "../models/bankDetails.js";
+import Vendor from "../models/vendors.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -235,15 +236,17 @@ export const userLogin = async (req, res) => {
 
 export const otpVerify = async (req, res) => {
   try {
-    const { email, otp } = req.body;
+    const { email, otp, role = "user" } = req.body;
 
-    const user = await Users.findOne({ email });
+    const user = await (role === "vendor"
+      ? vendors.findOne({ email })
+      : Users.findOne({ email }));
 
     if (!user) {
       return res.status(404).json({
         success: false,
         data: [],
-        message: "The email or password you entered is incorrect.",
+        message: "The email  you entered is incorrect.",
       });
     }
 
@@ -279,9 +282,11 @@ export const otpVerify = async (req, res) => {
 
 export const otpResend = async (req, res) => {
   try {
-    const { email } = req.body;
+    const { email, role = "user" } = req.body;
 
-    const user = await Users.findOne({ email });
+    const user = await (role === "vendor"
+      ? Vendor.findOne({ email })
+      : Users.findOne({ email }));
 
     if (!user) {
       return res.status(404).json({
