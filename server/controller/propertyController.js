@@ -377,9 +377,15 @@ export const getPropertiesByPrice = async (req, res) => {
         .status(400)
         .json({ success: false, message: "Invalid price value" });
     }
+
+    const priceCondition =
+      priceValue < 25000 ? { $lt: priceValue } : { $gt: priceValue };
+
     const properties = await PropertyRooms.find({
-      price: { $lt: priceValue },
+      price: priceCondition,
     }).populate("propertyId");
+    const rooms = await PropertyRooms?.find();
+    console.log(rooms);
 
     res.status(200).json({ success: true, data: properties });
   } catch (error) {
